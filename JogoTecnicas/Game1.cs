@@ -7,19 +7,21 @@ namespace JogoTecnicas
 {
     public class Game1 : Game
     {
-
+        //outras classes
         private SpriteAnimation _runAnimation;
+        private KeyboardInput _keyboardInput = new KeyboardInput();
 
-
-
+        //sprites
         private const string ASSET_NAME_SPRITESHEET_RUN = "shaolin_running_strip";
         private const string ASSET_NAME_BACKGROUND = "shaolin_background_a";
         private const string ASSET_NAME_FLOOR = "shaolin_background_floor";
 
+
+        //tela
         private int _screenWidth = 740;
         private int _screenHeight = 470;
 
-
+        
         private GraphicsDeviceManager _graphics;
         private SpriteBatch _spriteBatch;
 
@@ -66,6 +68,7 @@ namespace JogoTecnicas
 
         protected override void Update(GameTime gameTime)
         {
+            _keyboardInput.Update();
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
                 Exit();
 
