@@ -56,5 +56,14 @@ namespace JogoTecnicas
             get => _position;
             set => _position = value;
         }
+
+        public Rectangle BoundingBox
+        {
+            get
+            {
+                return new Rectangle((int)_position.X, (int)_position.Y, _runAnimation.FrameWidth, _runAnimation.FrameHeight);
+            }
+        }
+
     }
 }

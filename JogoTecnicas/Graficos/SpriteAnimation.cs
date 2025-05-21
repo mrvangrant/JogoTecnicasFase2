@@ -78,5 +78,9 @@ namespace JogoTecnicas.Graficos
             Rectangle sourceRect = new Rectangle(_currentFrame * _frameWidth, _index, _frameWidth, _frameHeight);
             spriteBatch.Draw(_texture, position, sourceRect, Color.White);
         }
+        public int FrameWidth => _frameWidth;
+        public int FrameHeight => _frameHeight;
     }
-}
+
+   
+    }
