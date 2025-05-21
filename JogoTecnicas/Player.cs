@@ -1,22 +1,60 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using JogoTecnicas.Graficos;
+using Microsoft.Xna.Framework.Graphics;
+using Microsoft.Xna.Framework;
 
 namespace JogoTecnicas
 {
     public class Player
     {
-        private KeyboardInput _keyboardInput = new KeyboardInput();
+        private SpriteAnimation _runAnimation;
+        private SpriteAnimation _jumpAnimation;
+        private SpriteAnimation _currentAnimation;
 
-        public void update()
+        private Vector2 _position;
+        private bool _isJumping = false;
+
+        public Player(SpriteAnimation runAnimation, SpriteAnimation jumpAnimation, Vector2 startPosition)
         {
-            
-            // Atualiza a lógica do jogador
+            _runAnimation = runAnimation;
+            _jumpAnimation = jumpAnimation;
+            _currentAnimation = _runAnimation;
+            _position = startPosition;
         }
 
+        public void Update(GameTime gameTime, KeyboardInput input)
+        {
+            // Troca de animação conforme a seta para cima
+            if (input.IsUpPressed())
+            {
+                if (!_isJumping)
+                {
+                    _isJumping = true;
+                    _jumpAnimation.Reset();
+                    _currentAnimation = _jumpAnimation;
+                }
+            }
+            else
+            {
+                if (_isJumping)
+                {
+                    _isJumping = false;
+                    _runAnimation.Reset();
+                    _currentAnimation = _runAnimation;
+                }
+            }
 
+            _currentAnimation.Update(gameTime);
+        }
 
+        public void Draw(SpriteBatch spriteBatch)
+        {
+            _currentAnimation.Draw(spriteBatch, _position);
+        }
+
+        public Vector2 Position
+        {
+            get => _position;
+            set => _position = value;
+        }
     }
 }

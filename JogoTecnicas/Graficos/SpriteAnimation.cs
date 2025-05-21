@@ -11,6 +11,7 @@ namespace JogoTecnicas.Graficos
     public class SpriteAnimation
     {
         private Texture2D _texture;
+        private int _index;
         private int _frameWidth;
         private int _frameHeight;
         private int _totalFrames;
@@ -22,9 +23,10 @@ namespace JogoTecnicas.Graficos
         public bool Loop { get; set; } = true;
         public bool IsPlaying { get; private set; } = true;
 
-        public SpriteAnimation(Texture2D texture, int frameWidth, int frameHeight, int totalFrames, float timePerFrame)
+        public SpriteAnimation(Texture2D texture,int index, int frameWidth, int frameHeight, int totalFrames, float timePerFrame)
         {
             _texture = texture;
+            _index = index;
             _frameWidth = frameWidth;
             _frameHeight = frameHeight;
             _totalFrames = totalFrames;
@@ -73,7 +75,7 @@ namespace JogoTecnicas.Graficos
 
         public void Draw(SpriteBatch spriteBatch, Vector2 position)
         {
-            Rectangle sourceRect = new Rectangle(_currentFrame * _frameWidth, 0, _frameWidth, _frameHeight);
+            Rectangle sourceRect = new Rectangle(_currentFrame * _frameWidth, _index, _frameWidth, _frameHeight);
             spriteBatch.Draw(_texture, position, sourceRect, Color.White);
         }
     }
