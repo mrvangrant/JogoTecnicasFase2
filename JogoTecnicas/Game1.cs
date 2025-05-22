@@ -2,6 +2,7 @@
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
+using System;
 
 namespace JogoTecnicas
 {
@@ -27,6 +28,11 @@ namespace JogoTecnicas
         //tela
         private int _screenWidth = 740;
         private int _screenHeight = 470;
+
+
+        //para escalar sprites
+        private float _scaleX;
+        private float _scaleY;
 
         //altura do chão
         private int floorY;
@@ -64,21 +70,33 @@ namespace JogoTecnicas
 
         public Score _score;
 
+        public float Scale => Math.Min(_scaleX, _scaleY);
+
         public Game1()
         {
             _graphics = new GraphicsDeviceManager(this);
             Content.RootDirectory = "Content";
-            IsMouseVisible = true;
+            IsMouseVisible = false;
         }
 
         protected override void Initialize()
         {
-            _graphics.IsFullScreen = false;
+            _screenWidth = 1920;
+            _screenHeight = 1080;
             _graphics.PreferredBackBufferWidth = _screenWidth;
             _graphics.PreferredBackBufferHeight = _screenHeight;
+            _graphics.IsFullScreen = true;
             _graphics.ApplyChanges();
 
             floorY = _screenHeight - 60;
+
+           
+
+            //calculos para escalar os sprites
+            _scaleX = (float)_screenWidth / 740f;
+            _scaleY = (float)_screenHeight / 470f;
+            float _scale = Math.Min(_scaleX, _scaleY);
+            
 
             base.Initialize();
         }
