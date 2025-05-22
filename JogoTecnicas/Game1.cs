@@ -87,6 +87,20 @@ namespace JogoTecnicas
             // Atualiza o player (animação correr/saltar)
             _player.Update(gameTime, _keyboardInput);
 
+            //verificar colisões
+            Collisions collisions = new Collisions();
+            Rectangle playerRect = _player.BoundingBox;
+            Rectangle floorRect = _buildings.FloorRectangle;
+
+            if (collisions.CheckCollision(playerRect, floorRect))
+            {
+                // Ajusta a posição do player para ficar em cima do chão
+                _player.Position = new Vector2(_player.Position.X, floorRect.Top - _player.BoundingBox.Height);
+
+                // Se o Player tiver um controle de pulo, pare o pulo aqui
+                // Exemplo: _player.PararPulo(); (implemente se necessário)
+            }
+
             base.Update(gameTime);
         }
 
