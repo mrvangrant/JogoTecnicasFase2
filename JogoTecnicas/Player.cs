@@ -14,7 +14,7 @@ namespace JogoTecnicas
         private float _jumpDelayTimer = 0f; // Timer para o atraso do salto
         private float _verticalVelocity = 0f; // Velocidade vertical do jogador
 
-        private const float JumpDelay = 0.27f; // Atraso de 200ms antes de iniciar a animação de salto
+        private const float JumpDelay = 0.27f; // Atraso antes de iniciar a animação de salto
 
         public Player(SpriteAnimation runAnimation, SpriteAnimation jumpAnimation, Vector2 startPosition)
         {
