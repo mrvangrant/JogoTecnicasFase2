@@ -16,7 +16,13 @@ namespace JogoTecnicas
         private bool _isSliding = false;
         private float _verticalVelocity = 0f; // Velocidade vertical do jogador
 
+
         public Player(SpriteAnimation runAnimation, SpriteAnimation jumpAnimation, SpriteAnimation slideAnimation, Vector2 startPosition)
+
+        private const float JumpDelay = 0.27f; // Atraso antes de iniciar a animação de salto
+
+        public Player(SpriteAnimation runAnimation, SpriteAnimation jumpAnimation, Vector2 startPosition)
+
         {
             _runAnimation = runAnimation;
             _jumpAnimation = jumpAnimation;
@@ -25,14 +31,22 @@ namespace JogoTecnicas
             _position = startPosition;
         }
 
-        public void Update(GameTime gameTime, KeyboardInput input)
+        public void Update(GameTime gameTime, KeyboardInput input, Rectangle floorRect)
         {
+
             // Variáveis de física
             const float gravity = 0.6f; // Gravidade que puxa o jogador para baixo
             const float jumpForce = -12.5f; // Força inicial do salto
             const float groundLevel = 346; // Posição Y do chão
 
-            bool isOnGround = _position.Y >= groundLevel;
+            const float gravity = 0.6f;
+            const float jumpForce = -12.5f;
+
+
+            // Aplica gravidade sempre
+            _verticalVelocity += gravity;
+            _position.Y += _verticalVelocity;
+
 
             // Inicia o salto apenas se o jogador estiver no chão e não estiver deslizando
             if (input.IsUpPressed() && !_isJumping && !_isSliding && isOnGround)
@@ -47,20 +61,19 @@ namespace JogoTecnicas
                 _currentAnimation = _jumpAnimation;
             }
 
-            // Aplica gravidade enquanto o jogador está no ar
-            if (!isOnGround || _isJumping)
-            {
-                _verticalVelocity += gravity; // Aumenta a velocidade vertical devido à gravidade
-                _position.Y += _verticalVelocity; // Atualiza a posição do jogador com base na velocidade
-            }
+            // Atualiza o retângulo do player após o movimento
+            Rectangle playerRect = this.BoundingBox;
 
-            // Verifica se o jogador atingiu o chão
-            if (_position.Y >= groundLevel)
-            {
-                _position.Y = groundLevel; // Mantém o jogador no chão
-                _verticalVelocity = 0f; // Reseta a velocidade vertical
+            // Verifica colisão com o chão (apenas se estiver a cair)
+            bool isOnGround = playerRect.Intersects(floorRect) && _verticalVelocity >= 0;
 
-                // Finaliza o estado de salto e retorna à animação de corrida
+            // Se colidiu com o chão, ajusta a posição e reseta a velocidade
+            if (isOnGround)
+            {
+                _position.Y = floorRect.Top - _runAnimation.FrameHeight;
+                _verticalVelocity = 0f;
+
+
                 if (_isJumping && !_jumpAnimation.IsPlaying)
                 {
                     _isJumping = false;
@@ -69,6 +82,7 @@ namespace JogoTecnicas
                     _currentAnimation = _runAnimation;
                 }
             }
+
 
             // Inicia a animação de deslizar apenas se o jogador estiver no chão e não estiver pulando
             if (input.IsDownPressed() && !_isSliding && !_isJumping && isOnGround)
@@ -95,6 +109,20 @@ namespace JogoTecnicas
            
 
             // Atualiza a animação atual
+
+            // Só permite iniciar o salto se está no chão
+            if (input.IsUpPressed() && isOnGround && !_isJumping)
+            {
+                _isJumping = true;
+                _verticalVelocity = jumpForce;
+
+                _jumpAnimation.Loop = false;
+                _jumpAnimation.Reset();
+                _jumpAnimation.Play();
+                _currentAnimation = _jumpAnimation;
+            }
+
+
             _currentAnimation.Update(gameTime);
         }
 
@@ -110,6 +138,15 @@ namespace JogoTecnicas
             get => _position;
             set => _position = value;
         }
+
+        public Rectangle BoundingBox
+        {
+            get
+            {
+                return new Rectangle((int)_position.X, (int)_position.Y, _runAnimation.FrameWidth, _runAnimation.FrameHeight);
+            }
+        }
+
     }
 }
 

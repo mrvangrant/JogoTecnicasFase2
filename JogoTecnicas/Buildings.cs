@@ -63,5 +63,16 @@ namespace JogoTecnicas
         }
 
         public float FloorY => _floorY;
+
+        public Rectangle FloorRectangle
+        {
+            get
+            {
+
+                return new Rectangle(0, (int)_floorY, _screenWidth, _floorTexture.Height);
+            }
+        }
+
+
     }
 }

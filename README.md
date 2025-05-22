@@ -4,9 +4,11 @@ Jogo para a segunda fase do trabalho de grupo da disciplina de tecnicas
 
 # To-do #
 -Colisões tanto com o chão tanto com futuro objetos.  
--Acabar de fazer as animações do personagem, de forma a que basta premir um botão para completar a animação de saltar  
--Fazer com que o player verdadeiramente salte  
 -Criação de obejetos aleatorios que o player tem que saltar sobre  
+-GameState, isto é ecra de perder, score e coisas assim  
 
 -Ideia
--Forma de gerar plataformas de tamanhos aleatorios
+-Forma de gerar plataformas de tamanhos aleatorios  
+
+# notas #
+já temos um sistema de colisões e conseguimos fazer com que o player salte mas não estão a funcionar em conjunto ainda.  
