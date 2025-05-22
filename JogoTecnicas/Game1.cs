@@ -66,7 +66,7 @@ namespace JogoTecnicas
             var jumpAnimation = new SpriteAnimation(_spriteSheetTextureRun,448, _frameWidth, _frameHeight, _totalFrames, _timePerFrame); 
 
             // Inicializa o Player
-            _player = new Player(runAnimation, jumpAnimation, new Vector2(180, floorY - _frameHeight));
+            _player = new Player(runAnimation, jumpAnimation, new Vector2(180, floorY - _frameHeight-100));
 
             _backgroundTexture = Content.Load<Texture2D>(ASSET_NAME_BACKGROUND);
             _floorTexture = Content.Load<Texture2D>(ASSET_NAME_FLOOR);
@@ -85,21 +85,9 @@ namespace JogoTecnicas
             _buildings.Update(gameTime);
 
             // Atualiza o player (animação correr/saltar)
-            _player.Update(gameTime, _keyboardInput);
+            _player.Update(gameTime, _keyboardInput, _buildings.FloorRectangle);
 
-            //verificar colisões
-            Collisions collisions = new Collisions();
-            Rectangle playerRect = _player.BoundingBox;
-            Rectangle floorRect = _buildings.FloorRectangle;
-
-            if (collisions.CheckCollision(playerRect, floorRect))
-            {
-                // Ajusta a posição do player para ficar em cima do chão
-                _player.Position = new Vector2(_player.Position.X, floorRect.Top - _player.BoundingBox.Height);
-
-                // Se o Player tiver um controle de pulo, pare o pulo aqui
-                // Exemplo: _player.PararPulo(); (implemente se necessário)
-            }
+            
 
             base.Update(gameTime);
         }

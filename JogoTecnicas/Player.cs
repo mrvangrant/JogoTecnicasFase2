@@ -24,54 +24,51 @@ namespace JogoTecnicas
             _position = startPosition;
         }
 
-        public void Update(GameTime gameTime, KeyboardInput input)
+        public void Update(GameTime gameTime, KeyboardInput input, Rectangle floorRect)
         {
-            // Variáveis de física
-            const float gravity = 0.6f; // Gravidade que puxa o jogador para baixo
-            const float jumpForce = -12.5f; // Força inicial do salto (ajustada para ser mais suave)
-            const float groundLevel = 346; // Posição Y do chão
+            const float gravity = 0.6f;
+            const float jumpForce = -12.5f;
 
-            bool isOnGround = _position.Y >= groundLevel;
+            // Aplica gravidade sempre
+            _verticalVelocity += gravity;
+            _position.Y += _verticalVelocity;
 
-            // Inicia o salto apenas se o jogador estiver no chão
-            if (input.IsUpPressed() && !_isJumping && isOnGround)
+            // Atualiza o retângulo do player após o movimento
+            Rectangle playerRect = this.BoundingBox;
+
+            // Verifica colisão com o chão (apenas se estiver a cair)
+            bool isOnGround = playerRect.Intersects(floorRect) && _verticalVelocity >= 0;
+
+            // Se colidiu com o chão, ajusta a posição e reseta a velocidade
+            if (isOnGround)
             {
-                _isJumping = true;
-                _verticalVelocity = jumpForce; // Aplica a força inicial do salto
+                _position.Y = floorRect.Top - _runAnimation.FrameHeight;
+                _verticalVelocity = 0f;
 
-                // Inicia a animação de salto imediatamente
-                _jumpAnimation.Loop = false;
-                _jumpAnimation.Reset();
-                _jumpAnimation.Play();
-                _currentAnimation = _jumpAnimation;
-            }
-
-            // Aplica gravidade enquanto o jogador está no ar
-            if (!isOnGround || _isJumping)
-            {
-                _verticalVelocity += gravity; // Aumenta a velocidade vertical devido à gravidade
-                _position.Y += _verticalVelocity; // Atualiza a posição do jogador com base na velocidade
-            }
-
-            // Verifica se o jogador atingiu o chão
-            if (_position.Y >= groundLevel)
-            {
-                _position.Y = groundLevel; // Mantém o jogador no chão
-                _verticalVelocity = 0f; // Reseta a velocidade vertical
-
-                // Só troca para a animação de corrida se a animação de salto tiver terminado
                 if (_isJumping && !_jumpAnimation.IsPlaying)
                 {
-                    _isJumping = false; // Finaliza o estado de salto
+                    _isJumping = false;
                     _runAnimation.Loop = true;
                     _runAnimation.Play();
                     _currentAnimation = _runAnimation;
                 }
             }
 
-            // Atualiza a animação atual
+            // Só permite iniciar o salto se está no chão
+            if (input.IsUpPressed() && isOnGround && !_isJumping)
+            {
+                _isJumping = true;
+                _verticalVelocity = jumpForce;
+
+                _jumpAnimation.Loop = false;
+                _jumpAnimation.Reset();
+                _jumpAnimation.Play();
+                _currentAnimation = _jumpAnimation;
+            }
+
             _currentAnimation.Update(gameTime);
         }
+
 
         public void Draw(SpriteBatch spriteBatch)
         {
