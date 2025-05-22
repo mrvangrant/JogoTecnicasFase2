@@ -62,6 +62,8 @@ namespace JogoTecnicas
         public float TimePerFrame => _timePerFrame;
         public bool IsGameOver { get => _isGameOver; set => _isGameOver = value; }
 
+        public Score _score;
+
         public Game1()
         {
             _graphics = new GraphicsDeviceManager(this);
@@ -93,6 +95,7 @@ namespace JogoTecnicas
             var jumpAnimation = new SpriteAnimation(_spriteSheetTextureRun,448, _frameWidth, _frameHeight, _totalFrames, _timePerFrame);
             var slideAnimation = new SpriteAnimation(_spriteSheetTextureRun,384, _frameWidth, _frameHeight, _totalFrames + 1, _timePerFrame);
 
+            
 
             // Inicializa o Player
             _player = new Player(runAnimation, jumpAnimation, slideAnimation, new Vector2(180, floorY - _frameHeight));
@@ -102,8 +105,8 @@ namespace JogoTecnicas
             _obstacles = new Obstacles(_obstacleTexture);
             //carregar fonte
             _font = Content.Load<SpriteFont>("DefaultFont");
+            _score = new Score(_font, new Vector2(20, 20));
 
-        
 
             // Carrega as texturas de fundo e chão
             _backgroundTexture = Content.Load<Texture2D>(ASSET_NAME_BACKGROUND);
@@ -111,6 +114,9 @@ namespace JogoTecnicas
 
             // Inicializa a classe Buildings
             _buildings = new Buildings(_backgroundTexture, _floorTexture, _screenWidth, _screenHeight);
+
+            
+
         }
 
         protected override void Update(GameTime gameTime)
@@ -124,6 +130,8 @@ namespace JogoTecnicas
                 }
                 return;
             }
+
+            _score.Update(gameTime, _isGameOver);
 
             _keyboardInput.Update();
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
@@ -142,6 +150,8 @@ namespace JogoTecnicas
                 _isGameOver = true;
             }
 
+            
+
             base.Update(gameTime);
         }
 
@@ -150,6 +160,7 @@ namespace JogoTecnicas
             GraphicsDevice.Clear(Color.CornflowerBlue);
 
             _spriteBatch.Begin();
+
 
             // desenha o cenário, o player e os obstáculos, respetivamente
             _buildings.Draw(_spriteBatch);
@@ -163,6 +174,8 @@ namespace JogoTecnicas
                 _spriteBatch.DrawString(_font, "Game Over", new Vector2(_screenWidth / 2 - 80, _screenHeight / 2 - 20), Color.Red, 0, Vector2.Zero, 2f, SpriteEffects.None, 0);
                 _spriteBatch.DrawString(_font, "Pressione R para recomecar", new Vector2(_screenWidth / 2 - 120, _screenHeight / 2 + 30), Color.White);
             }
+
+            _score.Draw(_spriteBatch);
 
             _spriteBatch.End();
 
