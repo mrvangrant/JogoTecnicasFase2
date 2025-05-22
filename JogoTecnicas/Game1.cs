@@ -88,7 +88,7 @@ namespace JogoTecnicas
             _spriteSheetTextureRun = Content.Load<Texture2D>(ASSET_NAME_SPRITESHEET);
 
 
-            // Crie as animações de correr e saltar (
+            // Crie as animações de correr e saltar
             var runAnimation = new SpriteAnimation(_spriteSheetTextureRun,320, _frameWidth, _frameHeight, _totalFrames, _timePerFrame);
             var jumpAnimation = new SpriteAnimation(_spriteSheetTextureRun,448, _frameWidth, _frameHeight, _totalFrames, _timePerFrame);
             var slideAnimation = new SpriteAnimation(_spriteSheetTextureRun,384, _frameWidth, _frameHeight, _totalFrames + 1, _timePerFrame);
@@ -103,13 +103,7 @@ namespace JogoTecnicas
             //carregar fonte
             _font = Content.Load<SpriteFont>("DefaultFont");
 
-            // Crie as animações de correr e saltar
-            var runAnimation = new SpriteAnimation(_spriteSheetTextureRun, 320, _frameWidth, _frameHeight, _totalFrames, _timePerFrame);
-            var jumpAnimation = new SpriteAnimation(_spriteSheetTextureRun, 448, _frameWidth, _frameHeight, _totalFrames, _timePerFrame);
-
-            // Inicializa o Player
-            _player = new Player(runAnimation, jumpAnimation, new Vector2(180, floorY - _frameHeight - 100));
-
+        
 
             // Carrega as texturas de fundo e chão
             _backgroundTexture = Content.Load<Texture2D>(ASSET_NAME_BACKGROUND);
