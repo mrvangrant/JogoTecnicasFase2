@@ -28,21 +28,24 @@ namespace JogoTecnicas
         private int _screenWidth = 740;
         private int _screenHeight = 470;
 
+        //altura do chão
         private int floorY;
 
         private GraphicsDeviceManager _graphics;
         private SpriteBatch _spriteBatch;
 
+        // Textura do player e valores para os frames
         private Texture2D _spriteSheetTextureRun;
         private int _frameWidth = 64;
         private int _frameHeight = 64;
         private int _totalFrames = 8;
         private float _timePerFrame = 0.1f;
 
+        // Textura de fundo e chão
         private Texture2D _backgroundTexture;
         private Texture2D _floorTexture;
 
-        // Propriedades públicas para o GameManager acessar
+        // Propriedades públicas para o GameManager
         public Player Player { get => _player; set => _player = value; }
         public Obstacles Obstacles { get => _obstacles; set => _obstacles = value; }
         public Buildings Buildings { get => _buildings; set => _buildings = value; }
@@ -97,6 +100,7 @@ namespace JogoTecnicas
             // Inicializa o Player
             _player = new Player(runAnimation, jumpAnimation, new Vector2(180, floorY - _frameHeight - 100));
 
+            // Carrega as texturas de fundo e chão
             _backgroundTexture = Content.Load<Texture2D>(ASSET_NAME_BACKGROUND);
             _floorTexture = Content.Load<Texture2D>(ASSET_NAME_FLOOR);
 
@@ -108,6 +112,7 @@ namespace JogoTecnicas
         {
             if (_isGameOver)
             {
+                //para reiniciar o jogo
                 if (Keyboard.GetState().IsKeyDown(Keys.R))
                 {
                     _gameManager.RestartGame(this);
@@ -141,10 +146,13 @@ namespace JogoTecnicas
 
             _spriteBatch.Begin();
 
+            // desenha o cenário, o player e os obstáculos, respetivamente
             _buildings.Draw(_spriteBatch);
             _player.Draw(_spriteBatch);
             _obstacles.Draw(_spriteBatch);
 
+
+            //escreve no ecra quando acontece um game over
             if (_isGameOver)
             {
                 _spriteBatch.DrawString(_font, "Game Over", new Vector2(_screenWidth / 2 - 80, _screenHeight / 2 - 20), Color.Red, 0, Vector2.Zero, 2f, SpriteEffects.None, 0);
