@@ -2,6 +2,8 @@
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
+using System.Collections.Generic;
+using System;
 
 namespace JogoTecnicas
 {
@@ -13,9 +15,23 @@ namespace JogoTecnicas
         private Player _player;
 
         //sprites
-        private const string ASSET_NAME_SPRITESHEET = "TheDummyAnim-SpriteSheet";
-        private const string ASSET_NAME_BACKGROUND = "shaolin_background_a";
-        private const string ASSET_NAME_FLOOR = "shaolin_background_floor";
+        private string ASSET_NAME_SPRITESHEET = "TheDummyAnim-SpriteSheet";
+        private string ASSET_NAME_BACKGROUND = "shaolin_background_a";
+        private string ASSET_NAME_FLOOR = "shaolin_background_floor";
+        private string ASSET_NAME_OBSTACLES = "Obstaculo";
+
+        //obstaculos
+        private List<Obstaculos> _obstacles = new List<Obstaculos>();
+        private Texture2D _obstacleTexture;
+        private Random _random = new Random();
+        private float _obstacleSpawnTimer = 0f;
+
+
+        //gameState
+        private GameState _gameState = GameState.Running;
+        private SpriteFont _font; // Para desenhar o texto
+
+
 
         //tela
         private int _screenWidth = 740;
@@ -31,7 +47,7 @@ namespace JogoTecnicas
         private int _frameHeight = 64;   // altura de cada frame
         private int _totalFrames = 8;
         private float _timePerFrame = 0.1f; // 10 frames por segundo
-       // private int _index = 0+64*anim; // índice do sprite na sprite sheet
+       
 
         private Texture2D _backgroundTexture;
         private Texture2D _floorTexture;
@@ -57,9 +73,14 @@ namespace JogoTecnicas
 
         protected override void LoadContent()
         {
+
+
+            _font = Content.Load<SpriteFont>("DefaultFont");
+
             _spriteBatch = new SpriteBatch(GraphicsDevice);
 
             _spriteSheetTextureRun = Content.Load<Texture2D>(ASSET_NAME_SPRITESHEET);
+            _obstacleTexture = Content.Load<Texture2D>(ASSET_NAME_OBSTACLES);
 
             // Crie as animações de correr e saltar (
             var runAnimation = new SpriteAnimation(_spriteSheetTextureRun,320, _frameWidth, _frameHeight, _totalFrames, _timePerFrame);
@@ -77,6 +98,9 @@ namespace JogoTecnicas
 
         protected override void Update(GameTime gameTime)
         {
+            if (_gameState == GameState.GameOver)
+                return; // Não atualiza nada se o jogo acabou
+
             _keyboardInput.Update();
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
                 Exit();
@@ -87,22 +111,39 @@ namespace JogoTecnicas
             // Atualiza o player (animação correr/saltar)
             _player.Update(gameTime, _keyboardInput);
 
-            //verificar colisões
-            Collisions collisions = new Collisions();
-            Rectangle playerRect = _player.BoundingBox;
-            Rectangle floorRect = _buildings.FloorRectangle;
+            // Obstáculos
+            float deltaTime = (float)gameTime.ElapsedGameTime.TotalSeconds;
 
-            if (collisions.CheckCollision(playerRect, floorRect))
+            // Spawna obstáculos a cada X segundos
+            _obstacleSpawnTimer += deltaTime;
+            if (_obstacleSpawnTimer > 2f) // a cada 2 segundos
             {
-                // Ajusta a posição do player para ficar em cima do chão
-                _player.Position = new Vector2(_player.Position.X, floorRect.Top - _player.BoundingBox.Height);
+                float y = _buildings.FloorY - _obstacleTexture.Height;
+                _obstacles.Add(new Obstaculos(_obstacleTexture, new Vector2(_screenWidth, y)));
+                _obstacleSpawnTimer = 0f;
+            }
 
-                // Se o Player tiver um controle de pulo, pare o pulo aqui
-                // Exemplo: _player.PararPulo(); (implemente se necessário)
+            // Atualiza e remove obstáculos fora da tela
+            for (int i = _obstacles.Count - 1; i >= 0; i--)
+            {
+                _obstacles[i].Update(200f, deltaTime); // 200f = mesma velocidade do chão
+                if (_obstacles[i].Position.X + _obstacleTexture.Width < 0)
+                    _obstacles.RemoveAt(i);
+            }
+
+            // Verifica colisão com obstáculos
+            foreach (var obstacle in _obstacles)
+            {
+                if (_player.BoundingBox.Intersects(obstacle.BoundingBox))
+                {
+                    _gameState = GameState.GameOver;
+                    break;
+                }
             }
 
             base.Update(gameTime);
         }
+
 
         protected override void Draw(GameTime gameTime)
         {
@@ -110,8 +151,19 @@ namespace JogoTecnicas
 
             _spriteBatch.Begin();
 
+            if (_gameState == GameState.GameOver)
+            {
+                string message = "Game Over";
+                Vector2 size = _font.MeasureString(message);
+                Vector2 position = new Vector2((_screenWidth - size.X) / 2, (_screenHeight - size.Y) / 2);
+                _spriteBatch.DrawString(_font, message, position, Color.Red);
+            }
+
             // Desenha cenário (background e chão)
             _buildings.Draw(_spriteBatch);
+
+            foreach (var obstacle in _obstacles)
+                obstacle.Draw(_spriteBatch);
 
             // Desenha personagem
             _player.Draw(_spriteBatch);
