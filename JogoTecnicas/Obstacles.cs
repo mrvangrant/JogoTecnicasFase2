@@ -1,5 +1,4 @@
-﻿
-using Microsoft.Xna.Framework.Graphics;
+﻿using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework;
 using System.Collections.Generic;
 using System;
@@ -11,16 +10,21 @@ namespace JogoTecnicas
         public Texture2D Texture;
         public Vector2 Position;
         public Rectangle Bounds => new((int)Position.X, (int)Position.Y, Texture.Width, Texture.Height);
-
-        public Obstacle(Texture2D texture, Vector2 position)
+        public bool _isPlayerMovingRight;
+        public Obstacle(Texture2D texture, Vector2 position, bool isPlayerMovingRight)
         {
             Texture = texture;
             Position = position;
+            _isPlayerMovingRight = isPlayerMovingRight;
         }
 
-        public void Update(float speed)
+        public void Update(float speed, bool isPlayerMovingRight)
         {
-            Position.X -= speed;
+            if (isPlayerMovingRight)
+            {
+                Position.X -= speed;
+            }
+            
         }
 
         public void Draw(SpriteBatch spriteBatch)
@@ -36,27 +40,32 @@ namespace JogoTecnicas
         private Random _random = new();
         private float _spawnTimer;
         private float _spawnInterval = 2f; // segundos
+        private bool _isPlayerMovingRight;
 
         public Obstacles(Texture2D texture)
         {
             _obstacleTexture = texture;
         }
 
-        public void Update(GameTime gameTime, float speed)
+        public void Update(GameTime gameTime, float speed, bool isPlayerMovingRight)
         {
             _spawnTimer += (float)gameTime.ElapsedGameTime.TotalSeconds;
             if (_spawnTimer >= _spawnInterval)
             {
                 _spawnTimer = 0;
                 float y = 350; // Ajuste conforme o chão do seu jogo
-                _obstacles.Add(new Obstacle(_obstacleTexture, new Vector2(800, y)));
+                _obstacles.Add(new Obstacle(_obstacleTexture, new Vector2(800, y), isPlayerMovingRight));
             }
 
             for (int i = _obstacles.Count - 1; i >= 0; i--)
             {
-                _obstacles[i].Update(speed);
-                if (_obstacles[i].Position.X < -_obstacleTexture.Width)
-                    _obstacles.RemoveAt(i);
+                if (isPlayerMovingRight)
+                {
+                    _obstacles[i].Update(speed, isPlayerMovingRight);
+                    if (_obstacles[i].Position.X < -_obstacleTexture.Width)
+                        _obstacles.RemoveAt(i);
+                }
+                
             }
         }
 
@@ -74,6 +83,15 @@ namespace JogoTecnicas
                     return true;
             }
             return false;
+        }
+
+        // Novo método para retornar os retângulos de colisão de todos os obstáculos
+        public IEnumerable<Rectangle> GetBoundingBoxes()
+        {
+            foreach (var obs in _obstacles)
+            {
+                yield return obs.Bounds;
+            }
         }
     }
 }

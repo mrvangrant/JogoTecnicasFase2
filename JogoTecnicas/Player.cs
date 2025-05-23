@@ -8,47 +8,54 @@ namespace JogoTecnicas
     {
         private SpriteAnimation _runAnimation;
         private SpriteAnimation _jumpAnimation;
-        private SpriteAnimation _slideAnimation; // Adicionado: Campo para a animação de deslizar
+        private SpriteAnimation _slideAnimation;
+        private SpriteAnimation _idleAnimation;
         private SpriteAnimation _currentAnimation;
 
         private Vector2 _position;
+        private bool _isRunning = false;
         private bool _isJumping = false;
         private bool _isSliding = false;
-        private float _verticalVelocity = 0f; // Velocidade vertical do jogador
+        private bool _isIdle = true;
+        private float _verticalVelocity = 0f;
+        private bool _isFacingRight = true;
+        private bool _isPlayerMovingRight = false;
 
+        private Rectangle _runCollisionBox;
+        private Rectangle _jumpCollisionBox;
+        private Rectangle _slideCollisionBox;
+        private Rectangle _idleCollisionBox;
 
-        
+        public bool IsIdle => _isIdle;
+        public bool IsFacingRight => _isFacingRight;
+        public bool isPlayerMovingRight => _isPlayerMovingRight;
 
-        private const float JumpDelay = 0.27f; // Atraso antes de iniciar a animação de salto
-
-        public Player(SpriteAnimation runAnimation, SpriteAnimation jumpAnimation, SpriteAnimation slideAnimation, Vector2 startPosition)
-
+        public Player(SpriteAnimation runAnimation, SpriteAnimation jumpAnimation, SpriteAnimation slideAnimation, SpriteAnimation idleAnimation, Vector2 startPosition)
         {
             _runAnimation = runAnimation;
             _jumpAnimation = jumpAnimation;
             _slideAnimation = slideAnimation;
-            _currentAnimation = _runAnimation;
+            _idleAnimation = idleAnimation;
+            _currentAnimation = _idleAnimation;
             _position = startPosition;
+
+            _runCollisionBox = new Rectangle(0, 0, _runAnimation.FrameWidth, _runAnimation.FrameHeight);
+            _jumpCollisionBox = new Rectangle(0, 0, _jumpAnimation.FrameWidth, _jumpAnimation.FrameHeight);
+            _slideCollisionBox = new Rectangle(0, 0, _slideAnimation.FrameWidth, _slideAnimation.FrameHeight);
+            _idleCollisionBox = new Rectangle(0, 0, _idleAnimation.FrameWidth, _idleAnimation.FrameHeight);
         }
 
         public void Update(GameTime gameTime, KeyboardInput input, Rectangle floorRect)
         {
-            // Variáveis de física
-            const float gravity = 0.6f; // Gravidade que puxa o jogador para baixo
-            const float jumpForce = -12.5f; // Força inicial do salto
+            const float gravity = 0.6f;
+            const float jumpForce = -12.5f;
 
-            // Aplica gravidade sempre
             _verticalVelocity += gravity;
             _position.Y += _verticalVelocity;
 
-            // Atualiza o retângulo do player após o movimento
             Rectangle playerRect = this.BoundingBox;
-
-            // Verifica colisão com o chão (apenas se estiver a cair)
             bool isOnGround = playerRect.Intersects(floorRect) && _verticalVelocity >= 0;
 
-
-            // Se colidiu com o chão, ajusta a posição e reseta a velocidade
             if (isOnGround)
             {
                 _position.Y = floorRect.Top - _runAnimation.FrameHeight;
@@ -57,61 +64,82 @@ namespace JogoTecnicas
                 if (_isJumping && !_jumpAnimation.IsPlaying)
                 {
                     _isJumping = false;
-                    _runAnimation.Loop = true;
-                    _runAnimation.Play();
-                    _currentAnimation = _runAnimation;
+                    SetCurrentAnimation(_runAnimation, true);
+                }
+
+                if (!_isRunning && !_isJumping && !_isSliding)
+                {
+                    _isPlayerMovingRight = false;
+                    _isIdle = true;
+                    SetCurrentAnimation(_idleAnimation, true);
                 }
             }
 
-
-            // Inicia o salto apenas se o jogador estiver no chão e não estiver deslizando
             if (input.IsUpPressed() && !_isJumping && !_isSliding && isOnGround)
             {
+                _isPlayerMovingRight = false;
                 _isJumping = true;
-                _verticalVelocity = jumpForce; // Aplica a força inicial do salto
+                _isIdle = false;
+                _verticalVelocity = jumpForce;
 
-                // Inicia a animação de salto
-                _jumpAnimation.Loop = false;
-                _jumpAnimation.Reset();
-                _jumpAnimation.Play();
-                _currentAnimation = _jumpAnimation;
+                SetCurrentAnimation(_jumpAnimation, false);
             }
 
-            
-
-            // Inicia a animação de deslizar apenas se o jogador estiver no chão e não estiver pulando
             if (input.IsDownPressed() && !_isSliding && !_isJumping && isOnGround)
             {
+                _isPlayerMovingRight = false;
                 _isSliding = true;
+                _isIdle = false;
 
-                // Inicia a animação de deslizar
-                _slideAnimation.Loop = false;
-                _slideAnimation.Reset();
-                _slideAnimation.Play();
-                _currentAnimation = _slideAnimation;
+                SetCurrentAnimation(_slideAnimation, false);
             }
 
-            // Finaliza a animação de deslizar
             if (_isSliding && !_slideAnimation.IsPlaying)
             {
                 _isSliding = false;
-
-                // Retorna à animação de corrida
-                _runAnimation.Loop = true;
-                _runAnimation.Play();
-                _currentAnimation = _runAnimation;
+                SetCurrentAnimation(_runAnimation, true);
             }
 
-            // Atualiza a animação atual
+            if (input.IsRightPressed())
+            {
+                _isPlayerMovingRight = true;
+                _isFacingRight = true;
+                _position.X += 0.3f;
+
+                if (!_isJumping && !_isSliding)
+                {
+                    _isRunning = true;
+                    _isIdle = false;
+                    SetCurrentAnimation(_runAnimation, true);
+                }
+            }
+            else if (input.IsLeftPressed())
+            {
+                _isPlayerMovingRight = false;
+                _isFacingRight = false;
+                _position.X -= 2f;
+
+                if (!_isJumping && !_isSliding)
+                {
+                    _isRunning = true;
+                    _isIdle = false;
+                    SetCurrentAnimation(_runAnimation, true);
+                }
+            }
+            else if (!_isJumping && !_isSliding)
+            {
+                _isRunning = false;
+                _isIdle = true;
+                SetCurrentAnimation(_idleAnimation, true);
+            }
+
             _currentAnimation.Update(gameTime);
         }
 
-
-
-
         public void Draw(SpriteBatch spriteBatch)
         {
-            _currentAnimation.Draw(spriteBatch, _position);
+            SpriteEffects spriteEffect = _isFacingRight ? SpriteEffects.None : SpriteEffects.FlipHorizontally;
+            _currentAnimation.Draw(spriteBatch, _position, spriteEffect);
         }
 
         public Vector2 Position
@@ -124,10 +152,29 @@ namespace JogoTecnicas
         {
             get
             {
-                return new Rectangle((int)_position.X, (int)_position.Y, _runAnimation.FrameWidth, _runAnimation.FrameHeight);
+                Rectangle collisionBox = _currentAnimation == _runAnimation ? _runCollisionBox :
+                                         _currentAnimation == _jumpAnimation ? _jumpCollisionBox :
+                                         _currentAnimation == _slideAnimation ? _slideCollisionBox :
+                                         _idleCollisionBox;
+
+                return new Rectangle((int)_position.X + collisionBox.X, (int)_position.Y + collisionBox.Y, collisionBox.Width, collisionBox.Height);
             }
         }
 
+        public void SetRunCollisionBox(Rectangle collisionBox) => _runCollisionBox = collisionBox;
+        public void SetJumpCollisionBox(Rectangle collisionBox) => _jumpCollisionBox = collisionBox;
+        public void SetSlideCollisionBox(Rectangle collisionBox) => _slideCollisionBox = collisionBox;
+        public void SetIdleCollisionBox(Rectangle collisionBox) => _idleCollisionBox = collisionBox;
+
+        private void SetCurrentAnimation(SpriteAnimation animation, bool loop)
+        {
+            if (_currentAnimation != animation)
+            {
+                animation.Loop = loop;
+                animation.Reset();
+                animation.Play();
+                _currentAnimation = animation;
+            }
+        }
     }
 }
-

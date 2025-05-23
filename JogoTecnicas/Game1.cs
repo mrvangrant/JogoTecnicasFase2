@@ -2,6 +2,10 @@
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
+using System.Numerics;
+
+// Adicione o alias para evitar ambiguidade
+using Vector2 = Microsoft.Xna.Framework.Vector2;
 
 namespace JogoTecnicas
 {
@@ -91,14 +95,21 @@ namespace JogoTecnicas
 
 
             // Crie as animações de correr e saltar
-            var runAnimation = new SpriteAnimation(_spriteSheetTextureRun,320, _frameWidth, _frameHeight, _totalFrames, _timePerFrame);
-            var jumpAnimation = new SpriteAnimation(_spriteSheetTextureRun,448, _frameWidth, _frameHeight, _totalFrames, _timePerFrame);
-            var slideAnimation = new SpriteAnimation(_spriteSheetTextureRun,384, _frameWidth, _frameHeight, _totalFrames + 1, _timePerFrame);
+            var runAnimation = new SpriteAnimation(_spriteSheetTextureRun, 320, _frameWidth, _frameHeight, _totalFrames, _timePerFrame);
+            var jumpAnimation = new SpriteAnimation(_spriteSheetTextureRun, 448, _frameWidth, _frameHeight, _totalFrames, _timePerFrame);
+            var slideAnimation = new SpriteAnimation(_spriteSheetTextureRun, 384, _frameWidth, _frameHeight, _totalFrames + 1, _timePerFrame);
+            var idleAnimation = new SpriteAnimation(_spriteSheetTextureRun, 0, _frameWidth, _frameHeight, 4, _timePerFrame);
+           
 
-            
 
             // Inicializa o Player
-            _player = new Player(runAnimation, jumpAnimation, slideAnimation, new Vector2(180, floorY - _frameHeight));
+            _player = new Player(runAnimation, jumpAnimation, slideAnimation, idleAnimation, new Vector2(180, floorY - _frameHeight));
+
+            //
+            _player.SetRunCollisionBox(new Rectangle(15, 20, 40, 45)); // Colisão para corrida
+            _player.SetJumpCollisionBox(new Rectangle(15, 5, 35, 50)); // Colisão para salto
+            _player.SetSlideCollisionBox(new Rectangle(10, 30, 45, 35)); // Colisão para deslizar
+            _player.SetIdleCollisionBox(new Rectangle(20, 15, 20, 50)); // Colisão para Idle que está certa
 
             //carregar obstaculo
             _obstacleTexture = Content.Load<Texture2D>("Obstaculo");
@@ -115,7 +126,7 @@ namespace JogoTecnicas
             // Inicializa a classe Buildings
             _buildings = new Buildings(_backgroundTexture, _floorTexture, _screenWidth, _screenHeight);
 
-            
+
 
         }
 
@@ -130,7 +141,6 @@ namespace JogoTecnicas
                 }
                 return;
             }
-
             _score.Update(gameTime, _isGameOver);
 
             _keyboardInput.Update();
@@ -138,19 +148,19 @@ namespace JogoTecnicas
                 Exit();
 
             // Atualiza o cenário (background e chão)
-            _buildings.Update(gameTime);
+            _buildings.Update(gameTime, Player.isPlayerMovingRight);
 
             // Atualiza o player (animação correr/saltar)
             _player.Update(gameTime, _keyboardInput, _buildings.FloorRectangle);
 
-            _obstacles.Update(gameTime, 5f);
+            _obstacles.Update(gameTime, 5f, Player.isPlayerMovingRight);
 
             if (_obstacles.CheckCollision(_player.BoundingBox))
             {
                 _isGameOver = true;
             }
 
-            
+
 
             base.Update(gameTime);
         }
@@ -161,14 +171,12 @@ namespace JogoTecnicas
 
             _spriteBatch.Begin();
 
-
-            // desenha o cenário, o player e os obstáculos, respetivamente
+            // Desenha o cenário, o player e os obstáculos
             _buildings.Draw(_spriteBatch);
             _player.Draw(_spriteBatch);
             _obstacles.Draw(_spriteBatch);
 
-
-            //escreve no ecra quando acontece um game over
+            // Exibe mensagem de Game Over
             if (_isGameOver)
             {
                 _spriteBatch.DrawString(_font, "Game Over", new Vector2(_screenWidth / 2 - 80, _screenHeight / 2 - 20), Color.Red, 0, Vector2.Zero, 2f, SpriteEffects.None, 0);
@@ -177,9 +185,30 @@ namespace JogoTecnicas
 
             _score.Draw(_spriteBatch);
 
+            // Desenha os retângulos de colisão
+            DrawCollisionBox(_spriteBatch, _player.BoundingBox, Color.Red); // Colisão do player
+            foreach (var obstacle in _obstacles.GetBoundingBoxes()) // Supondo que Obstacles tenha um método para obter os retângulos
+            {
+                DrawCollisionBox(_spriteBatch, obstacle, Color.Yellow); // Colisão dos obstáculos
+            }
+
             _spriteBatch.End();
 
             base.Draw(gameTime);
+        }
+
+        // Método auxiliar para desenhar retângulos de colisão
+        private void DrawCollisionBox(SpriteBatch spriteBatch, Rectangle rectangle, Color color)
+        {
+            // Cria uma textura de 1x1 pixel
+            Texture2D texture = new Texture2D(GraphicsDevice, 1, 1);
+            texture.SetData(new[] { color });
+
+            // Desenha as bordas do retângulo
+            spriteBatch.Draw(texture, new Rectangle(rectangle.X, rectangle.Y, rectangle.Width, 1), color); // Topo
+            spriteBatch.Draw(texture, new Rectangle(rectangle.X, rectangle.Y, 1, rectangle.Height), color); // Esquerda
+            spriteBatch.Draw(texture, new Rectangle(rectangle.X + rectangle.Width - 1, rectangle.Y, 1, rectangle.Height), color); // Direita
+            spriteBatch.Draw(texture, new Rectangle(rectangle.X, rectangle.Y + rectangle.Height - 1, rectangle.Width, 1), color); // Base
         }
     }
 }

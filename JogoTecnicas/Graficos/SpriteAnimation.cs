@@ -73,11 +73,22 @@ namespace JogoTecnicas.Graficos
             }
         }
 
-        public void Draw(SpriteBatch spriteBatch, Vector2 position)
+        public void Draw(SpriteBatch spriteBatch, Vector2 position, SpriteEffects spriteEffect = SpriteEffects.None)
         {
             Rectangle sourceRect = new Rectangle(_currentFrame * _frameWidth, _index, _frameWidth, _frameHeight);
-            spriteBatch.Draw(_texture, position, sourceRect, Color.White);
+            spriteBatch.Draw(
+                _texture,               // Textura do sprite
+                position,               // Posição na tela
+                sourceRect,             // Retângulo da textura a ser desenhado
+                Color.White,            // Cor
+                0f,                     // Rotação (nenhuma)
+                Vector2.Zero,           // Origem (canto superior esquerdo)
+                1f,                     // Escala (tamanho original)
+                spriteEffect,           // Efeito de inversão
+                0f                      // Camada de profundidade
+            );
         }
+
         public int FrameWidth => _frameWidth;
         public int FrameHeight => _frameHeight;
     }

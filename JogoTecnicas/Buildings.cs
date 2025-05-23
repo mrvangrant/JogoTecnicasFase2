@@ -25,6 +25,7 @@ namespace JogoTecnicas
 
         public Buildings(Texture2D backgroundTexture, Texture2D floorTexture, int screenWidth, int screenHeight, float backgroundScrollSpeed = 20f, float floorScrollSpeed = 200f)
         {
+
             _backgroundTexture = backgroundTexture;
             _floorTexture = floorTexture;
             _screenWidth = screenWidth;
@@ -36,20 +37,25 @@ namespace JogoTecnicas
             _floorY = _screenHeight - 60; // Ajuste conforme necessário
         }
 
-        public void Update(GameTime gameTime)
+        public void Update(GameTime gameTime, bool isPlayerMovingRight)
         {
             float delta = (float)gameTime.ElapsedGameTime.TotalSeconds;
 
-            // Atualiza o offset do chão
-            _floorOffset += _floorScrollSpeed * delta;
-            if (_floorOffset >= _floorTexture.Width)
-                _floorOffset -= _floorTexture.Width;
+            // Verifica se o jogador está se movendo para a direita
+            if (isPlayerMovingRight)
+            {
+                // Atualiza o offset do chão
+                _floorOffset += _floorScrollSpeed * delta;
+                if (_floorOffset >= _floorTexture.Width)
+                    _floorOffset -= _floorTexture.Width;
 
-            // Atualiza o offset do background
-            _backgroundOffset += _backgroundScrollSpeed * delta;
-            if (_backgroundOffset >= _backgroundTexture.Width)
-                _backgroundOffset -= _backgroundTexture.Width;
+                // Atualiza o offset do background
+                _backgroundOffset += _backgroundScrollSpeed * delta;
+                if (_backgroundOffset >= _backgroundTexture.Width)
+                    _backgroundOffset -= _backgroundTexture.Width;
+            }
         }
+
 
         public void Draw(SpriteBatch spriteBatch)
         {
