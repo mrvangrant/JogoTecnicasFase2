@@ -2,6 +2,8 @@
 
 Jogo para a segunda fase do trabalho de grupo da disciplina de tecnicas
 
+##
+
 # To-do #
 -Colisões tanto com o chão tanto com futuro objetos.  
 -Criação de obejetos aleatorios que o player tem que saltar sobre  
