@@ -125,9 +125,6 @@ namespace JogoTecnicas
 
             // Inicializa a classe Buildings
             _buildings = new Buildings(_backgroundTexture, _floorTexture, _screenWidth, _screenHeight);
-
-
-
         }
 
         protected override void Update(GameTime gameTime)
