@@ -2,7 +2,7 @@
 
 Jogo para a segunda fase do trabalho de grupo da disciplina de tecnicas
 
-##
+## Classes ##
 
 # To-do #
 -Colisões tanto com o chão tanto com futuro objetos.  
