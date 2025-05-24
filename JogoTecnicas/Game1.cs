@@ -1,7 +1,9 @@
 ﻿using JogoTecnicas.Graficos;
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Audio;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
+using Microsoft.Xna.Framework.Media;
 using System.Numerics;
 
 // Adicione o alias para evitar ambiguidade
@@ -11,6 +13,13 @@ namespace JogoTecnicas
 {
     public class Game1 : Game
     {
+
+        //Sons
+        Song musicaSom;
+        SoundEffect saltarSom;
+        SoundEffect morrerSom;
+
+
         // Gerenciador de estado do jogo
         private GameManager _gameManager = new GameManager();
 
@@ -99,6 +108,9 @@ namespace JogoTecnicas
 
             _spriteSheetTextureRun = Content.Load<Texture2D>(ASSET_NAME_SPRITESHEET);
 
+            //Sons e musica
+            Sound.LoadContent(Content);
+            Sound.PlayBackgroundMusic();
 
             // Crie as animações de correr e saltar
             var runAnimation = new SpriteAnimation(_spriteSheetTextureRun, 320, _frameWidth, _frameHeight, _totalFrames, _timePerFrame);
@@ -111,7 +123,7 @@ namespace JogoTecnicas
             // Inicializa o Player
             _player = new Player(runAnimation, jumpAnimation, slideAnimation, idleAnimation, new Vector2(180, floorY - _frameHeight));
 
-            //
+            //caixas de colisão
             _player.SetRunCollisionBox(new Rectangle(15, 20, 40, 45)); // Colisão para corrida
             _player.SetJumpCollisionBox(new Rectangle(15, 5, 35, 50)); // Colisão para salto
             _player.SetSlideCollisionBox(new Rectangle(10, 30, 45, 35)); // Colisão para deslizar
@@ -164,6 +176,7 @@ namespace JogoTecnicas
 
             if (_obstacles.CheckCollision(_player.BoundingBox))
             {
+                Sound.PlayDeath();
                 _isGameOver = true;
             }
 
