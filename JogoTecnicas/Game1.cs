@@ -80,8 +80,8 @@ namespace JogoTecnicas
 
 
         public Score _score;
-        private Wall _wall;
-        private Texture2D _wallTexture;
+        //private Wall _wall;
+        //private Texture2D _wallTexture;
 
 
 
@@ -135,12 +135,14 @@ namespace JogoTecnicas
             var voador = new SpriteAnimation(_inimigovoa, 0, 64, 64, 7, 0.1f);
             var caveira = new SpriteAnimation(_inimigochao, 0, 64, 64, 2, 0.1f);
 
-            //inicializa os inimigos
-            _enemies = new EnemiesManage(voador, caveira);
-
-
             // Inicializa o Player
             _player = new Player(runAnimation, jumpAnimation, slideAnimation, idleAnimation, new Vector2(180, floorY - _frameHeight));
+
+            //inicializa os inimigos
+            _enemies = new EnemiesManage(voador, caveira, Player.Position.X+1000);
+
+
+            
 
             //caixas de colisão
             _player.SetRunCollisionBox(new Rectangle(15, 20, 40, 45)); // Colisão para corrida

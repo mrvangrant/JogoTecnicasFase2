@@ -8,7 +8,7 @@ namespace JogoTecnicas
     public enum EnemyType
     {
         Static,
-        Patrol
+        Runner
     }
 
     public class Enemy
@@ -17,17 +17,14 @@ namespace JogoTecnicas
         public Vector2 Position;
         public Rectangle Bounds => new((int)Position.X, (int)Position.Y, Animation.FrameWidth, Animation.FrameHeight);
         private EnemyType _type;
-        private float _patrolMinX, _patrolMaxX;
         private float _speed;
         private int _direction = 1; // 1: direita, -1: esquerda
 
-        public Enemy(SpriteAnimation animation, Vector2 position, EnemyType type, float patrolMinX = 0, float patrolMaxX = 0, float speed = 1.5f)
+        public Enemy(SpriteAnimation animation, Vector2 position, EnemyType type, float speed)
         {
             Animation = animation;
             Position = position;
             _type = type;
-            _patrolMinX = patrolMinX;
-            _patrolMaxX = patrolMaxX;
             _speed = speed;
         }
 
@@ -37,19 +34,10 @@ namespace JogoTecnicas
             Position.X -= worldSpeed;
 
             // Movimento de patrulha apenas para o tipo Patrol
-            if (_type == EnemyType.Patrol)
+            if (_type == EnemyType.Runner)
             {
-                Position.X += _direction * _speed;
-                if (Position.X < _patrolMinX)
-                {
-                    Position.X = _patrolMinX;
-                    _direction = 1;
-                }
-                else if (Position.X > _patrolMaxX)
-                {
-                    Position.X = _patrolMaxX;
-                    _direction = -1;
-                }
+                Position.X -=  _speed;
+              
             }
 
             Animation.Update(gameTime);

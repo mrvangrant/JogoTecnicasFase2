@@ -62,7 +62,7 @@ namespace JogoTecnicas
             // Reinicializa os inimigos
             var voador = new SpriteAnimation(game.Voador, 0, 64, 64, 7, 0.2f);
             var caveira = new SpriteAnimation(game.Chao, 0, 64, 64, 2, 0.2f);
-            game.Enemies = new EnemiesManage(voador, caveira);
+            game.Enemies = new EnemiesManage(voador, caveira, game.Player.Position.X+1000);
 
             // Reinicializa o placar
             game._score.Reset();
