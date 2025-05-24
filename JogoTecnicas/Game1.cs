@@ -134,7 +134,8 @@ namespace JogoTecnicas
             _obstacles = new Obstacles(_obstacleTexture);
             //carregar fonte
             _font = Content.Load<SpriteFont>("DefaultFont");
-            _score = new Score(_font, new Vector2(20, 20));
+            _score = new Score(_font);
+
 
 
             // Carrega as texturas de fundo e chão
@@ -191,9 +192,9 @@ namespace JogoTecnicas
             // Obtém a matriz de visualização da câmera
             Matrix viewMatrix = _camera.GetViewMatrix();
 
+            // Desenha o cenário, o player e os obstáculos com a câmera
             _spriteBatch.Begin(transformMatrix: viewMatrix);
 
-            // Desenha o cenário, o player e os obstáculos
             _buildings.Draw(_spriteBatch);
             _player.Draw(_spriteBatch);
             _obstacles.Draw(_spriteBatch);
@@ -205,8 +206,6 @@ namespace JogoTecnicas
                 _spriteBatch.DrawString(_font, "Pressione R para recomecar", new Vector2(_screenWidth / 2 - 120, _screenHeight / 2 + 30), Color.White);
             }
 
-            _score.Draw(_spriteBatch);
-
             // Desenha os retângulos de colisão
             DrawCollisionBox(_spriteBatch, _player.BoundingBox, Color.Red);
             foreach (var obstacle in _obstacles.GetBoundingBoxes())
@@ -216,8 +215,14 @@ namespace JogoTecnicas
 
             _spriteBatch.End();
 
+            // Desenha o Score sem a transformação da câmera
+            _spriteBatch.Begin(); // Sem `transformMatrix`
+            _score.Draw(_spriteBatch);
+            _spriteBatch.End();
+
             base.Draw(gameTime);
         }
+
 
         // Método auxiliar para desenhar retângulos de colisão
         private void DrawCollisionBox(SpriteBatch spriteBatch, Rectangle rectangle, Color color)

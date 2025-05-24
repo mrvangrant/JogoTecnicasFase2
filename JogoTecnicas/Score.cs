@@ -10,10 +10,10 @@ namespace JogoTecnicas
         private int _score;
         private float _timer;
 
-        public Score(SpriteFont font, Vector2 position)
+        public Score(SpriteFont font)
         {
             _font = font;
-            _position = position;
+            _position = new Vector2(10, 10); // Posição fixa no canto superior esquerdo
             _score = 0;
             _timer = 0f;
         }
