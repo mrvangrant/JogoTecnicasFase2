@@ -76,10 +76,10 @@ namespace JogoTecnicas
         public float TimePerFrame => _timePerFrame;
         public bool IsGameOver { get => _isGameOver; set => _isGameOver = value; }
         public Wall Wall { get; set; }
+        public Camera _camera { get; private set; }
 
 
         public Score _score;
-        private Camera _camera;
         private Wall _wall;
         private Texture2D _wallTexture;
 
@@ -231,26 +231,6 @@ namespace JogoTecnicas
             _player.Draw(_spriteBatch);
             _enemies.Draw(_spriteBatch);
 
-            // Desenha o retângulo centrado no jogador
-            int rectangleWidth = 100; // Largura do retângulo
-            int rectangleHeight = 50; // Altura do retângulo
-            int rectangleX = (int)(_player.Position.X ); // Centraliza no eixo X do jogador
-            int rectangleY = (int)(floorY); // Mantém o Y fixo no chão
-
-            // Cria uma textura de 1x1 pixel para desenhar o retângulo
-            Texture2D rectangleTexture = new Texture2D(GraphicsDevice, 1, 1);
-            rectangleTexture.SetData(new[] { Color.Orange });
-
-            // Desenha o retângulo
-            _spriteBatch.Draw(rectangleTexture, new Rectangle(rectangleX, rectangleY, rectangleWidth, rectangleHeight), Color.Orange);
-
-            // Exibe mensagem de Game Over
-            if (_isGameOver)
-            {
-                _spriteBatch.DrawString(_font, "Game Over", new Vector2(_screenWidth / 2 - 80, _screenHeight / 2 - 20), Color.Red, 0, Vector2.Zero, 2f, SpriteEffects.None, 0);
-                _spriteBatch.DrawString(_font, "Pressione R para recomecar", new Vector2(_screenWidth / 2 - 120, _screenHeight / 2 + 30), Color.White);
-            }
-
             // Desenha os retângulos de colisão
             DrawCollisionBox(_spriteBatch, _player.BoundingBox, Color.Red);
             foreach (var enemies in _enemies.GetBoundingBoxes())
@@ -262,11 +242,36 @@ namespace JogoTecnicas
 
             // Desenha o Score sem a transformação da câmera
             _spriteBatch.Begin(); // Sem `transformMatrix`
-            _score.Draw(_spriteBatch);
+            _score.Draw(_spriteBatch, 1.25f);
+           
+
+
+            // Exibe mensagem de Game Over
+            if (_isGameOver)
+            {
+                string gameOverText = "Game Over";
+                string restartText = "Pressione R para recomecar";
+
+                // Calcula as posições para centralizar os textos
+                Vector2 gameOverSize = _font.MeasureString(gameOverText);
+                Vector2 restartSize = _font.MeasureString(restartText);
+
+                // Centraliza os textos na tela
+                Vector2 gameOverPosition = new Vector2((_screenWidth - gameOverSize.X) / 2, (_screenHeight - gameOverSize.Y) / 2 - 30);
+                Vector2 restartPosition = new Vector2((_screenWidth - restartSize.X) / 2, (_screenHeight - restartSize.Y) / 2 + 20);
+
+                // Desenha os textos
+                _spriteBatch.DrawString(_font, gameOverText, gameOverPosition, Color.Red, 0, Vector2.Zero, 1.5f, SpriteEffects.None, 0);
+                _spriteBatch.DrawString(_font, restartText, restartPosition, Color.White);
+            }
+
             _spriteBatch.End();
 
             base.Draw(gameTime);
         }
+
+
+
 
 
 
@@ -283,5 +288,12 @@ namespace JogoTecnicas
             spriteBatch.Draw(texture, new Rectangle(rectangle.X + rectangle.Width - 1, rectangle.Y, 1, rectangle.Height), color); // Direita
             spriteBatch.Draw(texture, new Rectangle(rectangle.X, rectangle.Y + rectangle.Height - 1, rectangle.Width, 1), color); // Base
         }
+        public void ResetCamera()
+        {
+            _camera = new Camera(ScreenWidth, ScreenHeight);
+            _camera.Update(Player.Position);
+        }
+        
+
     }
 }
