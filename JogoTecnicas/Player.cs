@@ -50,14 +50,15 @@ namespace JogoTecnicas
         {
             const float gravity = 0.6f;
             const float jumpForce = -12.5f;
-            const float slideForce = 8f;
+            const float slideForce = 6f;
             const float slideRes = 0.15f;
 
             _verticalVelocity += gravity;
             _position.Y += _verticalVelocity;
 
             Rectangle playerRect = this.BoundingBox;
-            bool isOnGround = playerRect.Intersects(floorRect) && _verticalVelocity >= 0;
+            bool isOnGround = playerRect.Intersects(FixedYRectangle) && _verticalVelocity >= 0;
+
 
             //logica de slide
             if (_isSliding)
@@ -181,9 +182,30 @@ namespace JogoTecnicas
 
         public void Draw(SpriteBatch spriteBatch)
         {
+            // Desenha a animação do player
             SpriteEffects spriteEffect = _isFacingRight ? SpriteEffects.None : SpriteEffects.FlipHorizontally;
             _currentAnimation.Draw(spriteBatch, _position, spriteEffect);
+
+            // Desenha o retângulo com Y fixo
+            Texture2D rectangleTexture = new Texture2D(spriteBatch.GraphicsDevice, 1, 1);
+            rectangleTexture.SetData(new[] { Color.White });
+            spriteBatch.Draw(rectangleTexture, FixedYRectangle, Color.Red * 0.5f);
         }
+        public Rectangle FixedYRectangle
+        {
+            get
+            {
+                int rectWidth = 70; // Largura fixa do retângulo
+                int rectHeight = 40; // Altura fixa do retângulo
+                int rectX = (int)_position.X; // Mesmo X do player
+                int rectY = 410; // Y constante (ajuste conforme necessário)
+
+                return new Rectangle(rectX, rectY, rectWidth, rectHeight);
+            }
+        }
+
+
+
 
         public Vector2 Position
         {
@@ -219,5 +241,16 @@ namespace JogoTecnicas
                 _currentAnimation = animation;
             }
         }
+        public Rectangle HorizontalTrackingBox
+        {
+            get
+            {
+                // Define o Y fixo e usa o X do player
+                int fixedY = 300; // Valor fixo para o eixo Y
+                return new Rectangle((int)Position.X, fixedY, BoundingBox.Width, BoundingBox.Height);
+            }
+        }
+
+
     }
 }

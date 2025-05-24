@@ -13,7 +13,7 @@ namespace JogoTecnicas
         public Score(SpriteFont font)
         {
             _font = font;
-            _position = new Vector2(10, 10); // Posição fixa no canto superior esquerdo
+            _position = new Vector2(20, 20); // Posição fixa no canto superior esquerdo
             _score = 0;
             _timer = 0f;
         }
@@ -31,10 +31,11 @@ namespace JogoTecnicas
             }
         }
 
-        public void Draw(SpriteBatch spriteBatch)
+        public void Draw(SpriteBatch spriteBatch, float scale = 1f)
         {
-            spriteBatch.DrawString(_font, $"Score: {_score}", _position, Color.White);
+            spriteBatch.DrawString(_font, $"Score: {_score}", _position, Color.White, 0, Vector2.Zero, scale, SpriteEffects.None, 0);
         }
+
 
         public void Reset()
         {
