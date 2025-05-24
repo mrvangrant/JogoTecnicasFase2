@@ -14,10 +14,7 @@ namespace JogoTecnicas
     public class Game1 : Game
     {
 
-        //Sons
-        Song musicaSom;
-        SoundEffect saltarSom;
-        SoundEffect morrerSom;
+      
 
 
         // Gerenciador de estado do jogo
@@ -27,8 +24,9 @@ namespace JogoTecnicas
         private KeyboardInput _keyboardInput = new KeyboardInput();
         private Buildings _buildings;
         private Player _player;
-        private Obstacles _obstacles;
-        private Texture2D _obstacleTexture;
+        private EnemiesManage _enemies;
+        private Texture2D _inimigovoa;
+        private Texture2D _inimigochao;
         private SpriteFont _font;
         private bool _isGameOver = false;
 
@@ -36,6 +34,7 @@ namespace JogoTecnicas
         private const string ASSET_NAME_SPRITESHEET = "TheDummyAnim-SpriteSheet";
         private const string ASSET_NAME_BACKGROUND = "shaolin_background_a";
         private const string ASSET_NAME_FLOOR = "shaolin_background_floor";
+        
 
         //tela
         private int _screenWidth = 740;
@@ -60,9 +59,11 @@ namespace JogoTecnicas
 
         // Propriedades públicas para o GameManager
         public Player Player { get => _player; set => _player = value; }
-        public Obstacles Obstacles { get => _obstacles; set => _obstacles = value; }
+        public EnemiesManage Enemies { get => _enemies; set => _enemies = value; }
         public Buildings Buildings { get => _buildings; set => _buildings = value; }
-        public Texture2D ObstacleTexture => _obstacleTexture;
+        public Texture2D Voador => _inimigovoa;
+
+        public Texture2D Chao => _inimigochao;
         public Texture2D SpriteSheetTextureRun => _spriteSheetTextureRun;
         public Texture2D BackgroundTexture => _backgroundTexture;
         public Texture2D FloorTexture => _floorTexture;
@@ -124,7 +125,18 @@ namespace JogoTecnicas
             var jumpAnimation = new SpriteAnimation(_spriteSheetTextureRun, 448, _frameWidth, _frameHeight, _totalFrames, _timePerFrame);
             var slideAnimation = new SpriteAnimation(_spriteSheetTextureRun, 384, _frameWidth, _frameHeight, _totalFrames + 1, _timePerFrame);
             var idleAnimation = new SpriteAnimation(_spriteSheetTextureRun, 0, _frameWidth, _frameHeight, 4, _timePerFrame);
-           
+
+
+            //carrega textura inimigos
+            _inimigovoa = Content.Load<Texture2D>("enemy_26x22");
+            _inimigochao = Content.Load<Texture2D>("enemy_44x40");
+
+            // Cria as animações dos inimigos
+            var voador = new SpriteAnimation(_inimigovoa, 0, 64, 64, 7, 0.1f);
+            var caveira = new SpriteAnimation(_inimigochao, 0, 64, 64, 2, 0.1f);
+
+            //inicializa os inimigos
+            _enemies = new EnemiesManage(voador, caveira);
 
 
             // Inicializa o Player
@@ -136,9 +148,10 @@ namespace JogoTecnicas
             _player.SetSlideCollisionBox(new Rectangle(10, 30, 45, 35)); // Colisão para deslizar
             _player.SetIdleCollisionBox(new Rectangle(20, 15, 20, 50)); // Colisão para Idle que está certa
 
-            //carregar obstaculo
-            _obstacleTexture = Content.Load<Texture2D>("Obstaculo");
-            _obstacles = new Obstacles(_obstacleTexture);
+            
+
+            
+            
             //carregar fonte
             _font = Content.Load<SpriteFont>("DefaultFont");
             _score = new Score(_font);
@@ -187,13 +200,13 @@ namespace JogoTecnicas
             // Atualiza o player
             _player.Update(gameTime, _keyboardInput, _buildings.FloorRectangle);
 
-            // Atualiza os obstáculos
-            _obstacles.Update(gameTime, 5f, Player.isPlayerMovingRight);
+            // Atualiza os inimigos
+            _enemies.Update(gameTime, 5f, Player.isPlayerMovingRight);
 
             // Atualiza a câmera com a posição do jogador
             _camera.Update(_player.Position);
 
-            if (_obstacles.CheckCollision(_player.BoundingBox))
+            if (_enemies.CheckCollision(_player.BoundingBox))
             {
                 Sound.PlayDeath();
                 _isGameOver = true;
@@ -216,7 +229,7 @@ namespace JogoTecnicas
             _buildings.Draw(_spriteBatch);
             Wall.Draw(_spriteBatch);
             _player.Draw(_spriteBatch);
-            _obstacles.Draw(_spriteBatch);
+            _enemies.Draw(_spriteBatch);
 
             // Desenha o retângulo centrado no jogador
             int rectangleWidth = 100; // Largura do retângulo
@@ -240,9 +253,9 @@ namespace JogoTecnicas
 
             // Desenha os retângulos de colisão
             DrawCollisionBox(_spriteBatch, _player.BoundingBox, Color.Red);
-            foreach (var obstacle in _obstacles.GetBoundingBoxes())
+            foreach (var enemies in _enemies.GetBoundingBoxes())
             {
-                DrawCollisionBox(_spriteBatch, obstacle, Color.Yellow);
+                DrawCollisionBox(_spriteBatch, enemies, Color.Yellow);
             }
 
             _spriteBatch.End();
