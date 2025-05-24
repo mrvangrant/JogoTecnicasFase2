@@ -74,9 +74,14 @@ namespace JogoTecnicas
         public int TotalFrames => _totalFrames;
         public float TimePerFrame => _timePerFrame;
         public bool IsGameOver { get => _isGameOver; set => _isGameOver = value; }
+        public Wall Wall { get; set; }
+
 
         public Score _score;
         private Camera _camera;
+        private Wall _wall;
+        private Texture2D _wallTexture;
+
 
 
         public Game1()
@@ -105,6 +110,8 @@ namespace JogoTecnicas
         protected override void LoadContent()
         {
             _spriteBatch = new SpriteBatch(GraphicsDevice);
+            Wall = new Wall(GraphicsDevice, ScreenHeight, 20f); // Velocidade de 50 pixels por segundo
+
 
             _spriteSheetTextureRun = Content.Load<Texture2D>(ASSET_NAME_SPRITESHEET);
 
@@ -157,6 +164,17 @@ namespace JogoTecnicas
                 return;
             }
 
+            // Verifica colisão entre o jogador e a parede
+            Wall.Update(gameTime);
+
+            // Verifica colisão entre o jogador e a parede
+            if (Wall.BoundingBox.Intersects(Player.BoundingBox))
+            {
+                IsGameOver = true;
+            }
+
+
+
             _score.Update(gameTime, _isGameOver);
             _keyboardInput.Update();
 
@@ -196,8 +214,22 @@ namespace JogoTecnicas
             _spriteBatch.Begin(transformMatrix: viewMatrix);
 
             _buildings.Draw(_spriteBatch);
+            Wall.Draw(_spriteBatch);
             _player.Draw(_spriteBatch);
             _obstacles.Draw(_spriteBatch);
+
+            // Desenha o retângulo centrado no jogador
+            int rectangleWidth = 100; // Largura do retângulo
+            int rectangleHeight = 50; // Altura do retângulo
+            int rectangleX = (int)(_player.Position.X ); // Centraliza no eixo X do jogador
+            int rectangleY = (int)(floorY); // Mantém o Y fixo no chão
+
+            // Cria uma textura de 1x1 pixel para desenhar o retângulo
+            Texture2D rectangleTexture = new Texture2D(GraphicsDevice, 1, 1);
+            rectangleTexture.SetData(new[] { Color.Orange });
+
+            // Desenha o retângulo
+            _spriteBatch.Draw(rectangleTexture, new Rectangle(rectangleX, rectangleY, rectangleWidth, rectangleHeight), Color.Orange);
 
             // Exibe mensagem de Game Over
             if (_isGameOver)
@@ -222,6 +254,7 @@ namespace JogoTecnicas
 
             base.Draw(gameTime);
         }
+
 
 
         // Método auxiliar para desenhar retângulos de colisão

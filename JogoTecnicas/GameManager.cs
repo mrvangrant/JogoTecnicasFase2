@@ -63,6 +63,9 @@ namespace JogoTecnicas
 
             // Reinicializa o placar
             game._score.Reset();
+            game.Wall.Reset();
+
+
 
             // Reinicia o estado de Game Over
             game.IsGameOver = false;
