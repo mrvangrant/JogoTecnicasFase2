@@ -10,15 +10,20 @@ namespace JogoTecnicas.Graficos
 {
     public class SpriteAnimation
     {
-        private Texture2D _texture;
-        private int _index;
-        private int _frameWidth;
-        private int _frameHeight;
-        private int _totalFrames;
-        private float _timePerFrame;
-        private float _timer;
-        private int _currentFrame;
-        
+        public Texture2D _texture;
+        public int _index;
+        public int _frameWidth;
+        public int _frameHeight;
+        public int _totalFrames;
+        public float _timePerFrame;
+        public float _timer;
+        public int _currentFrame;
+
+        public Texture2D Texture => _texture;
+        public int Index => _index;
+        public int TotalFrames => _totalFrames;
+        public float TimePerFrame => _timePerFrame;
+
 
         public bool Loop { get; set; } = true;
         public bool IsPlaying { get; private set; } = true;

@@ -58,8 +58,10 @@ namespace JogoTecnicas
             game.Player.SetSlideCollisionBox(new Rectangle(10, 30, 45, 35)); // Colisão para deslizar
             game.Player.SetIdleCollisionBox(new Rectangle(20, 15, 20, 50)); // Colisão para deslizar
 
-            // Reinicializa os obstáculos
-            game.Obstacles = new Obstacles(game.ObstacleTexture);
+            // inicia os inimigos novamente
+            var voador = new SpriteAnimation(game.Voador, 0, 64, 64, 7, 0.2f);
+            var caveira = new SpriteAnimation(game.Chao, 0, 64, 64, 2, 0.2f);
+            game.Enemies = new EnemiesManage(voador, caveira);
 
             // Reinicializa o placar
             game._score.Reset();
