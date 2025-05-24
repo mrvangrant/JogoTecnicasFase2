@@ -224,7 +224,14 @@ namespace JogoTecnicas
 
         protected override void Draw(GameTime gameTime)
         {
+
             GraphicsDevice.Clear(Color.CornflowerBlue);
+            _spriteBatch.Begin();
+            _buildings.DrawBackground(_spriteBatch);
+            _buildings.DrawFloor(_spriteBatch);
+            _spriteBatch.End();
+
+            
 
             // Obtém a matriz de visualização da câmera
             Matrix viewMatrix = _camera.GetViewMatrix();
@@ -232,7 +239,7 @@ namespace JogoTecnicas
             // Desenha o cenário, o player e os obstáculos com a câmera
             _spriteBatch.Begin(transformMatrix: viewMatrix);
 
-            _buildings.Draw(_spriteBatch);
+            
             Wall.Draw(_spriteBatch);
             _player.Draw(_spriteBatch);
             _enemies.Draw(_spriteBatch);
