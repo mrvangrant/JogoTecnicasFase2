@@ -29,6 +29,8 @@ namespace JogoTecnicas.Objetos
         {
             // Move a parede para a direita
             _position.X += _speed * (float)gameTime.ElapsedGameTime.TotalSeconds;
+
+            
         }
 
         public void Draw(SpriteBatch spriteBatch)

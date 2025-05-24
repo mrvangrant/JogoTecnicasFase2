@@ -15,6 +15,7 @@ namespace JogoTecnicas.Inimigos
     {
         public SpriteAnimation Animation;
         public Vector2 Position;
+        public EnemyType Type => _type;
         public Rectangle Bounds => new((int)Position.X + _hitboxOffsetX, (int)Position.Y + _hitboxOffsetY, _hitboxWidth, _hitboxHeight);
         private EnemyType _type;
         private float _speed;

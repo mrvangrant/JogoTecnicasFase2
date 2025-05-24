@@ -30,6 +30,8 @@ namespace JogoTecnicas
         public bool IsIdle => _isIdle;
         public bool IsFacingRight => _isFacingRight;
         public bool isPlayerMovingRight => _isPlayerMovingRight;
+        public bool IsSliding => _isSliding;
+        public bool IsJumping => _isJumping;
 
         public Player(SpriteAnimation runAnimation, SpriteAnimation jumpAnimation, SpriteAnimation slideAnimation, SpriteAnimation idleAnimation, Vector2 startPosition)
         {

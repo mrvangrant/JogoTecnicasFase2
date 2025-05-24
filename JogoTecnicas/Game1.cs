@@ -18,8 +18,8 @@ namespace JogoTecnicas
     public class Game1 : Game
     {
 
-      
 
+        
 
         // Gerenciador de estado do jogo
         private GameManager _gameManager = new GameManager();
@@ -174,6 +174,9 @@ namespace JogoTecnicas
 
         protected override void Update(GameTime gameTime)
         {
+            
+
+
             if (_isGameOver)
             {
                 if (Keyboard.GetState().IsKeyDown(Keys.R))
@@ -208,6 +211,7 @@ namespace JogoTecnicas
 
             // Atualiza os inimigos
             _enemies.Update(gameTime, 5f, Player.isPlayerMovingRight, Player.Position.X);
+            _enemies.RemoveHitEnemies(_player.BoundingBox, _player.IsSliding, _player.IsJumping);
 
             // Atualiza a câmera com a posição do jogador
             _camera.Update(_player.Position);

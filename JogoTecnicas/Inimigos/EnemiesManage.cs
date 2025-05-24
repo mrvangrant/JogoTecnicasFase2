@@ -58,6 +58,37 @@ namespace JogoTecnicas.Inimigos
                     _enemies.RemoveAt(i);
             }
         }
+        //função que verifica se o jogador esta a saltar em cima do inimigo
+        private bool IsJumpingOnTop(Rectangle player, Rectangle enemy)
+        {
+            // Verifica se a parte inferior do jogador está acima da parte superior do inimigo e descendo
+            return player.Bottom >= enemy.Top - 5 &&
+                   player.Bottom <= enemy.Top + 10 &&
+                   player.Center.X >= enemy.Left &&
+                   player.Center.X <= enemy.Right;
+        }
+
+        //remove o inimigo runner quando o pplayer faz um slide nele
+        public void RemoveHitEnemies(Rectangle playerBounds, bool isSliding, bool isJumping)
+        {
+            for (int i = _enemies.Count - 1; i >= 0; i--)
+            {
+                var enemy = _enemies[i];
+
+                if (enemy.Bounds.Intersects(playerBounds))
+                {
+                    if (enemy.Type == EnemyType.Runner && isSliding)
+                    {
+                        _enemies.RemoveAt(i);
+                    }
+                    else if (enemy.Type == EnemyType.Static && isJumping && IsJumpingOnTop(playerBounds, enemy.Bounds))
+                    {
+                        _enemies.RemoveAt(i);
+                    }
+                }
+            }
+        }
+
 
         public void Draw(SpriteBatch spriteBatch)
         {
