@@ -32,7 +32,7 @@ namespace JogoTecnicas
             if (_spawnTimer >= _spawnInterval)
             {
                 _spawnTimer = 0;
-                float y = 350; // Ajuste conforme o chão do seu jogo
+                float y = 350; 
                 float x = 1000;
 
                 // Sorteia o tipo de inimigo
