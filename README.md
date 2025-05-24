@@ -4,7 +4,7 @@ Foi feito um Endless Runner em que o objetivo sobreviver o maximo de tempo possi
 
 # Content #
 
-Os assets utilizados foram retirados, com permissão, dos seguintes links:
+Os assets utilizados foram retirados, com permissão, dos seguintes links:  
 Colocar aqui os links depois
 
 ## Sprites ##
