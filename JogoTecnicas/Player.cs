@@ -18,6 +18,7 @@ namespace JogoTecnicas
         private bool _isSliding = false;
         private bool _isIdle = true;
         private float _verticalVelocity = 0f;
+        private float _horizontalVelocity = 0f;
         private bool _isFacingRight = true;
         private bool _isPlayerMovingRight = false;
 
@@ -49,12 +50,45 @@ namespace JogoTecnicas
         {
             const float gravity = 0.6f;
             const float jumpForce = -12.5f;
+            const float slideForce = 8f;
+            const float slideRes = 0.15f;
 
             _verticalVelocity += gravity;
             _position.Y += _verticalVelocity;
 
             Rectangle playerRect = this.BoundingBox;
             bool isOnGround = playerRect.Intersects(floorRect) && _verticalVelocity >= 0;
+
+            //logica de slide
+            if (_isSliding)
+            {
+                // Aplicar movimento
+                _position.X += _horizontalVelocity;
+
+                // Desacelerar
+                if (_horizontalVelocity > 0)
+                {
+                    _horizontalVelocity -= slideRes;
+                    if (_horizontalVelocity < 0) _horizontalVelocity = 0;
+                }
+                else if (_horizontalVelocity < 0)
+                {
+                    _horizontalVelocity += slideRes;
+                    if (_horizontalVelocity > 0) _horizontalVelocity = 0;
+                }
+
+                // Parar slide quando velocidade chega a zero
+                if (_horizontalVelocity == 0f)
+                {
+                    _isSliding = false;
+                    SetCurrentAnimation(_runAnimation, true);
+                }
+            }
+            else
+            {
+                _horizontalVelocity = 0f;
+            }
+
 
             if (isOnGround)
             {
@@ -91,6 +125,14 @@ namespace JogoTecnicas
                 _isPlayerMovingRight = false;
                 _isSliding = true;
                 _isIdle = false;
+                if (_isFacingRight)
+                {
+                    _horizontalVelocity = slideForce;
+                }
+                else
+                {
+                    _horizontalVelocity = -slideForce;
+                }
 
                 SetCurrentAnimation(_slideAnimation, false);
             }
