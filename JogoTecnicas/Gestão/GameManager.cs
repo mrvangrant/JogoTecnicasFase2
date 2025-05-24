@@ -58,7 +58,7 @@ namespace JogoTecnicas.Gestão
             // Redefine as caixas de colisão do jogador
             game.Player.SetRunCollisionBox(new Rectangle(15, 20, 40, 45)); // Colisão para corrida
             game.Player.SetJumpCollisionBox(new Rectangle(15, 5, 35, 50)); // Colisão para salto
-            game.Player.SetSlideCollisionBox(new Rectangle(10, 30, 45, 35)); // Colisão para deslizar
+            game.Player.SetSlideCollisionBox(new Rectangle(10, 50, 45, 15)); // Colisão para deslizar
             game.Player.SetIdleCollisionBox(new Rectangle(20, 15, 20, 50)); // Colisão para idle
 
             // Reinicializa os inimigos

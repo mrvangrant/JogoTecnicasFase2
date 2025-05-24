@@ -46,7 +46,7 @@ namespace JogoTecnicas.Inimigos
                 {
                     // Inimigo parado
                     var anim = CloneAnimation(_staticAnim);
-                    _enemies.Add(new Enemy(anim, new Vector2(x, y), EnemyType.Static, 0f));
+                    _enemies.Add(new Enemy(anim, new Vector2(x, y), EnemyType.Static, 0f, 20, 15, 26, 22));
                 }
                 else
                 {
@@ -54,7 +54,7 @@ namespace JogoTecnicas.Inimigos
                     var anim = CloneAnimation(_patrolAnim);
                     float patrolMinX = x - 60;
                     float patrolMaxX = x + 60;
-                    _enemies.Add(new Enemy(anim, new Vector2(x, y), EnemyType.Runner, 5f));
+                    _enemies.Add(new Enemy(anim, new Vector2(x, y), EnemyType.Runner, 4f, 10, 20, 44, 40));
                 }
             }
 

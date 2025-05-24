@@ -150,7 +150,7 @@ namespace JogoTecnicas
             //caixas de colisão
             _player.SetRunCollisionBox(new Rectangle(15, 20, 40, 45)); // Colisão para corrida
             _player.SetJumpCollisionBox(new Rectangle(15, 5, 35, 50)); // Colisão para salto
-            _player.SetSlideCollisionBox(new Rectangle(10, 30, 45, 35)); // Colisão para deslizar
+            _player.SetSlideCollisionBox(new Rectangle(10, 50, 45, 15)); // Colisão para deslizar
             _player.SetIdleCollisionBox(new Rectangle(20, 15, 20, 50)); // Colisão para Idle que está certa
 
             
