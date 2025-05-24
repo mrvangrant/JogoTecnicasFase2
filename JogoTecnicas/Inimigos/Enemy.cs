@@ -3,7 +3,7 @@ using JogoTecnicas.Graficos;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework;
 
-namespace JogoTecnicas
+namespace JogoTecnicas.Inimigos
 {
     public enum EnemyType
     {

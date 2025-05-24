@@ -1,4 +1,7 @@
-﻿using JogoTecnicas.Graficos;
+﻿using JogoTecnicas.Gestão;
+using JogoTecnicas.Graficos;
+using JogoTecnicas.Inimigos;
+using JogoTecnicas.Objetos;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Audio;
 using Microsoft.Xna.Framework.Graphics;

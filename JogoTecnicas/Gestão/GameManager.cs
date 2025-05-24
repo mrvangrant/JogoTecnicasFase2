@@ -1,7 +1,9 @@
 ﻿using Microsoft.Xna.Framework;
 using JogoTecnicas.Graficos;
+using JogoTecnicas.Inimigos;
+using JogoTecnicas.Objetos;
 
-namespace JogoTecnicas
+namespace JogoTecnicas.Gestão
 {
     public class GameManager
     {

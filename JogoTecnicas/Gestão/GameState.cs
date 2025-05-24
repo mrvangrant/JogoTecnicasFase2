@@ -1,5 +1,4 @@
-﻿
-namespace JogoTecnicas
+﻿namespace JogoTecnicas.Gestão
 {
     public enum GameState
     {

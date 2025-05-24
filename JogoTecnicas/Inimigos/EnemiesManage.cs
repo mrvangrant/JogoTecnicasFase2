@@ -3,8 +3,10 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using System;
 using System.Collections.Generic;
+using JogoTecnicas.Inimigos;
 
-namespace JogoTecnicas
+
+namespace JogoTecnicas.Inimigos
 {
     public class EnemiesManage
     {
@@ -52,7 +54,7 @@ namespace JogoTecnicas
                     var anim = CloneAnimation(_patrolAnim);
                     float patrolMinX = x - 60;
                     float patrolMaxX = x + 60;
-                    _enemies.Add(new Enemy(anim, new Vector2(x, y), EnemyType.Runner, 8f));
+                    _enemies.Add(new Enemy(anim, new Vector2(x, y), EnemyType.Runner, 5f));
                 }
             }
 

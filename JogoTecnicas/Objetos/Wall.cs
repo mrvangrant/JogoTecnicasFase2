@@ -1,7 +1,7 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 
-namespace JogoTecnicas
+namespace JogoTecnicas.Objetos
 {
     public class Wall
     {
