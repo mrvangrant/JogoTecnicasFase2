@@ -13,8 +13,15 @@ namespace JogoTecnicas.Objetos
 
         public Rectangle BoundingBox => new Rectangle((int)_position.X, (int)_position.Y, _width, _height);
 
+        // Propriedade pública para acessar e modificar a velocidade
+        public float Speed
+        {
+            get => _speed;
+            set => _speed = value;
+        }
+
         public Wall(GraphicsDevice graphicsDevice, int screenHeight, float speed)
-        { 
+        {
             _width = 50; // Largura inicial da parede
             _height = screenHeight; // Altura da parede igual à altura da tela
             _position = new Vector2(0, 0); // Sempre começa na posição X = 0
@@ -29,15 +36,12 @@ namespace JogoTecnicas.Objetos
         {
             // Move a parede para a direita
             _position.X += _speed * (float)gameTime.ElapsedGameTime.TotalSeconds;
-
-            
         }
 
         public void Draw(SpriteBatch spriteBatch)
         {
             spriteBatch.Draw(_texture, BoundingBox, Color.Orange);
         }
-
 
         public void Reset()
         {

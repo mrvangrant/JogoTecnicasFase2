@@ -174,9 +174,6 @@ namespace JogoTecnicas
 
         protected override void Update(GameTime gameTime)
         {
-            
-
-
             if (_isGameOver)
             {
                 if (Keyboard.GetState().IsKeyDown(Keys.R))
@@ -186,7 +183,36 @@ namespace JogoTecnicas
                 return;
             }
 
-            // Verifica colisão entre o jogador e a parede
+            // Define a velocidade máxima e base da parede
+            const float maxWallSpeed = 200f; // Velocidade máxima da parede
+            const float baseWallSpeed = 20f; // Velocidade inicial da parede
+            const float playerBaseSpeed = 200f; // Velocidade base do jogador
+            const float distanceThreshold = 300f; // Distância X para aumentar a velocidade
+
+            // Calcula a distância entre a parede e o jogador
+            float distanceToPlayer = Player.Position.X-15 - Wall.BoundingBox.Right;
+
+            // Ajusta a velocidade da parede com base na distância
+            if (distanceToPlayer > distanceThreshold)
+            {
+                // Aumenta a velocidade da parede gradualmente
+                Wall.Speed = MathHelper.Clamp(Wall.Speed + 15f * (float)gameTime.ElapsedGameTime.TotalSeconds, baseWallSpeed, maxWallSpeed);
+            }
+            else
+            {
+                // Calcula a nova velocidade da parede com base no score
+                float newWallSpeed = MathHelper.Clamp(baseWallSpeed + _score.CurrentScore / 20f, baseWallSpeed, maxWallSpeed);
+
+                // Garante que a velocidade da parede seja sempre menor que a do jogador
+                if (newWallSpeed >= playerBaseSpeed * 0.8f)
+                {
+                    newWallSpeed = playerBaseSpeed * 0.7f; // Mantém uma margem de segurança
+                }
+
+                Wall.Speed = newWallSpeed;
+            }
+
+            // Atualiza a parede
             Wall.Update(gameTime);
 
             // Verifica colisão entre o jogador e a parede
@@ -194,8 +220,6 @@ namespace JogoTecnicas
             {
                 IsGameOver = true;
             }
-
-
 
             _score.Update(gameTime, _isGameOver);
             _keyboardInput.Update();
@@ -224,6 +248,12 @@ namespace JogoTecnicas
 
             base.Update(gameTime);
         }
+
+
+
+
+
+
 
 
         protected override void Draw(GameTime gameTime)

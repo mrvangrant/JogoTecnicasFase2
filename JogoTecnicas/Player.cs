@@ -52,8 +52,8 @@ namespace JogoTecnicas
         {
             const float gravity = 0.6f;
             const float jumpForce = -12.5f;
-            const float slideForce = 6f;
-            const float slideRes = 0.15f;
+            const float slideForce = 3f;
+            const float slideRes = 0.10f;
 
             _verticalVelocity += gravity;
             _position.Y += _verticalVelocity;

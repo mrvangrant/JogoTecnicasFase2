@@ -10,6 +10,8 @@ namespace JogoTecnicas
         private int _score;
         private float _timer;
 
+        public int CurrentScore => _score; // Propriedade para acessar o score atual
+
         public Score(SpriteFont font)
         {
             _font = font;
@@ -35,7 +37,6 @@ namespace JogoTecnicas
         {
             spriteBatch.DrawString(_font, $"Score: {_score}", _position, Color.White, 0, Vector2.Zero, scale, SpriteEffects.None, 0);
         }
-
 
         public void Reset()
         {
