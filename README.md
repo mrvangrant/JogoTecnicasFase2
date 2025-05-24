@@ -4,14 +4,12 @@ Foi feito um Endless Runner em que o objetivo sobreviver o maximo de tempo possi
 
 # Content #
 
+Os assets utilizados foram retirados, com permissão, dos seguintes links:
+Colocar aqui os links depois
 
-# To-do #
--Colisões tanto com o chão tanto com futuro objetos.  
--Criação de obejetos aleatorios que o player tem que saltar sobre  
--GameState, isto é ecra de perder, score e coisas assim  
+## Sprites ##
 
--Ideia
--Forma de gerar plataformas de tamanhos aleatorios  
 
-# notas #
-já temos um sistema de colisões e conseguimos fazer com que o player salte mas não estão a funcionar em conjunto ainda.  
+
+# GameLoop #
+
