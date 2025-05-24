@@ -81,6 +81,7 @@ namespace JogoTecnicas
                 _isJumping = true;
                 _isIdle = false;
                 _verticalVelocity = jumpForce;
+                Sound.PlayJump();
 
                 SetCurrentAnimation(_jumpAnimation, false);
             }
