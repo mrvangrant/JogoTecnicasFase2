@@ -7,6 +7,7 @@ using Microsoft.Xna.Framework.Audio;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using Microsoft.Xna.Framework.Media;
+using System;
 using System.Numerics;
 
 // Adicione o alias para evitar ambiguidade
@@ -142,10 +143,10 @@ namespace JogoTecnicas
             _player = new Player(runAnimation, jumpAnimation, slideAnimation, idleAnimation, new Vector2(180, floorY - _frameHeight));
 
             //inicializa os inimigos
-            _enemies = new EnemiesManage(voador, caveira, Player.Position.X+1000);
+            _enemies = new EnemiesManage(voador, caveira);
 
 
-            
+
 
             //caixas de colisão
             _player.SetRunCollisionBox(new Rectangle(15, 20, 40, 45)); // Colisão para corrida
@@ -206,7 +207,7 @@ namespace JogoTecnicas
             _player.Update(gameTime, _keyboardInput, _buildings.FloorRectangle);
 
             // Atualiza os inimigos
-            _enemies.Update(gameTime, 5f, Player.isPlayerMovingRight);
+            _enemies.Update(gameTime, 5f, Player.isPlayerMovingRight, Player.Position.X);
 
             // Atualiza a câmera com a posição do jogador
             _camera.Update(_player.Position);
