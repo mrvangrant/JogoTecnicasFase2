@@ -104,7 +104,7 @@ namespace JogoTecnicas
             {
                 _isPlayerMovingRight = true;
                 _isFacingRight = true;
-                _position.X += 0.3f;
+                _position.X += 0.5f;
 
                 if (!_isJumping && !_isSliding)
                 {

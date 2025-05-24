@@ -67,6 +67,8 @@ namespace JogoTecnicas
         public bool IsGameOver { get => _isGameOver; set => _isGameOver = value; }
 
         public Score _score;
+        private Camera _camera;
+
 
         public Game1()
         {
@@ -84,8 +86,12 @@ namespace JogoTecnicas
 
             floorY = _screenHeight - 60;
 
+            // Inicializa a câmera
+            _camera = new Camera(_screenWidth, _screenHeight);
+
             base.Initialize();
         }
+
 
         protected override void LoadContent()
         {
@@ -131,42 +137,48 @@ namespace JogoTecnicas
         {
             if (_isGameOver)
             {
-                //para reiniciar o jogo
                 if (Keyboard.GetState().IsKeyDown(Keys.R))
                 {
                     _gameManager.RestartGame(this);
                 }
                 return;
             }
-            _score.Update(gameTime, _isGameOver);
 
+            _score.Update(gameTime, _isGameOver);
             _keyboardInput.Update();
+
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
                 Exit();
 
-            // Atualiza o cenário (background e chão)
+            // Atualiza o cenário
             _buildings.Update(gameTime, Player.isPlayerMovingRight);
 
-            // Atualiza o player (animação correr/saltar)
+            // Atualiza o player
             _player.Update(gameTime, _keyboardInput, _buildings.FloorRectangle);
 
+            // Atualiza os obstáculos
             _obstacles.Update(gameTime, 5f, Player.isPlayerMovingRight);
+
+            // Atualiza a câmera com a posição do jogador
+            _camera.Update(_player.Position);
 
             if (_obstacles.CheckCollision(_player.BoundingBox))
             {
                 _isGameOver = true;
             }
 
-
-
             base.Update(gameTime);
         }
+
 
         protected override void Draw(GameTime gameTime)
         {
             GraphicsDevice.Clear(Color.CornflowerBlue);
 
-            _spriteBatch.Begin();
+            // Obtém a matriz de visualização da câmera
+            Matrix viewMatrix = _camera.GetViewMatrix();
+
+            _spriteBatch.Begin(transformMatrix: viewMatrix);
 
             // Desenha o cenário, o player e os obstáculos
             _buildings.Draw(_spriteBatch);
@@ -183,10 +195,10 @@ namespace JogoTecnicas
             _score.Draw(_spriteBatch);
 
             // Desenha os retângulos de colisão
-            DrawCollisionBox(_spriteBatch, _player.BoundingBox, Color.Red); // Colisão do player
-            foreach (var obstacle in _obstacles.GetBoundingBoxes()) // Supondo que Obstacles tenha um método para obter os retângulos
+            DrawCollisionBox(_spriteBatch, _player.BoundingBox, Color.Red);
+            foreach (var obstacle in _obstacles.GetBoundingBoxes())
             {
-                DrawCollisionBox(_spriteBatch, obstacle, Color.Yellow); // Colisão dos obstáculos
+                DrawCollisionBox(_spriteBatch, obstacle, Color.Yellow);
             }
 
             _spriteBatch.End();

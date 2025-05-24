@@ -59,14 +59,18 @@ namespace JogoTecnicas
 
         public void Draw(SpriteBatch spriteBatch)
         {
-            // Desenha o background (duas vezes para efeito de loop)
+            // Desenha o background (três vezes para efeito de loop)
             spriteBatch.Draw(_backgroundTexture, new Vector2(-_backgroundOffset, 0), Color.White);
             spriteBatch.Draw(_backgroundTexture, new Vector2(_backgroundTexture.Width - _backgroundOffset, 0), Color.White);
+            spriteBatch.Draw(_backgroundTexture, new Vector2(2 * _backgroundTexture.Width - _backgroundOffset, 0), Color.White);
 
-            // Desenha o chão (duas vezes para efeito de loop)
+            // Desenha o chão (três vezes para efeito de loop)
             spriteBatch.Draw(_floorTexture, new Vector2(-_floorOffset, _floorY), Color.White);
             spriteBatch.Draw(_floorTexture, new Vector2(_floorTexture.Width - _floorOffset, _floorY), Color.White);
+            spriteBatch.Draw(_floorTexture, new Vector2(2 * _floorTexture.Width - _floorOffset, _floorY), Color.White);
         }
+
+
 
         public float FloorY => _floorY;
 

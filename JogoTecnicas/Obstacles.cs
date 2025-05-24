@@ -54,7 +54,7 @@ namespace JogoTecnicas
             {
                 _spawnTimer = 0;
                 float y = 350; // Ajuste conforme o chão do seu jogo
-                _obstacles.Add(new Obstacle(_obstacleTexture, new Vector2(800, y), isPlayerMovingRight));
+                _obstacles.Add(new Obstacle(_obstacleTexture, new Vector2(1000, y), isPlayerMovingRight));
             }
 
             for (int i = _obstacles.Count - 1; i >= 0; i--)
