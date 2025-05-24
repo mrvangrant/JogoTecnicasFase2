@@ -10,7 +10,7 @@ namespace JogoTecnicas
             // Reinicializa o jogador
             var runAnimation = new SpriteAnimation(
                 game.SpriteSheetTextureRun,
-                320,
+                129,
                 game.FrameWidth,
                 game.FrameHeight,
                 game.TotalFrames,
@@ -19,7 +19,7 @@ namespace JogoTecnicas
 
             var jumpAnimation = new SpriteAnimation(
                 game.SpriteSheetTextureRun,
-                448,
+                65,
                 game.FrameWidth,
                 game.FrameHeight,
                 game.TotalFrames,
@@ -28,7 +28,7 @@ namespace JogoTecnicas
 
             var slideAnimation = new SpriteAnimation(
                 game.SpriteSheetTextureRun,
-                384,
+                0,
                 game.FrameWidth,
                 game.FrameHeight,
                 game.TotalFrames + 1,
@@ -37,7 +37,7 @@ namespace JogoTecnicas
 
             var idleAnimation = new SpriteAnimation(
                 game.SpriteSheetTextureRun,
-                0,
+                193,
                 game.FrameWidth,
                 game.FrameHeight,
                 4,

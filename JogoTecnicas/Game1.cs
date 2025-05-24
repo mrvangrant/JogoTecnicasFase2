@@ -31,7 +31,7 @@ namespace JogoTecnicas
         private bool _isGameOver = false;
 
         //sprites
-        private const string ASSET_NAME_SPRITESHEET = "TheDummyAnim-SpriteSheet";
+        private const string ASSET_NAME_SPRITESHEET = "texture";
         private const string ASSET_NAME_BACKGROUND = "shaolin_background_a";
         private const string ASSET_NAME_FLOOR = "shaolin_background_floor";
         
@@ -121,10 +121,10 @@ namespace JogoTecnicas
             Sound.PlayBackgroundMusic();
 
             // Crie as animações de correr e saltar
-            var runAnimation = new SpriteAnimation(_spriteSheetTextureRun, 320, _frameWidth, _frameHeight, _totalFrames, _timePerFrame);
-            var jumpAnimation = new SpriteAnimation(_spriteSheetTextureRun, 448, _frameWidth, _frameHeight, _totalFrames, _timePerFrame);
-            var slideAnimation = new SpriteAnimation(_spriteSheetTextureRun, 384, _frameWidth, _frameHeight, _totalFrames + 1, _timePerFrame);
-            var idleAnimation = new SpriteAnimation(_spriteSheetTextureRun, 0, _frameWidth, _frameHeight, 4, _timePerFrame);
+            var runAnimation = new SpriteAnimation(_spriteSheetTextureRun, 129, _frameWidth, _frameHeight, _totalFrames, _timePerFrame);
+            var jumpAnimation = new SpriteAnimation(_spriteSheetTextureRun, 65, _frameWidth, _frameHeight, _totalFrames, _timePerFrame);
+            var slideAnimation = new SpriteAnimation(_spriteSheetTextureRun, 0, _frameWidth, _frameHeight, _totalFrames + 1, _timePerFrame);
+            var idleAnimation = new SpriteAnimation(_spriteSheetTextureRun, 193, _frameWidth, _frameHeight, 4, _timePerFrame);
 
 
             //carrega textura inimigos
