@@ -1068,3 +1068,8 @@ public void Reset()
             _spawnInterval = 2f;
         }
 ```
+--------------------------------------------------------------------------------------
+## Observações ##
+Temos como maior observação a complicação que acabou por ficar a classe Game1 e gostariamos que ela tivesse ficado mais organizada.
+Podiamos ter adicionado mais inimigos com padrões diferentes.
+Podiamos ter adicionado mais mecânicas a nível da mobilidade do jogador, como por exemplo, um trampolim ou então um salto-duplo.
