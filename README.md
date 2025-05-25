@@ -31,9 +31,9 @@ Também é possivel atacar inimigos voadores saltando na cabeça deles e inimigo
 
 ## Player ##
 
-No inicio da classe, initializam-se as variaveis todas para as animacoes e os estados dos personagens, tal como as variaveis para as hurtboxes.
+No inicio da classe, initializam-se as variaveis todas para as animacoes e os estados dos personagens, tal como as variaveis para as CollisionBoxes.
 
-Na Func "public Player" atribui-se as variaveis das animacoes inicializadas no inicio da classe os respetivos sprites/animacoes carreagdas na classe game1 e atribui-se a cada animacao a sua hurtbox.
+No construtor "Player" atribui-se as variaveis responsvaeis pelas animações e pelas colisões.
 
 ```
    public Player(SpriteAnimation runAnimation, SpriteAnimation jumpAnimation, SpriteAnimation slideAnimation, SpriteAnimation idleAnimation, SpriteAnimation deathAnimation, Vector2 startPosition)
@@ -54,7 +54,7 @@ Na Func "public Player" atribui-se as variaveis das animacoes inicializadas no i
         }
 ```
 
-Na Func "public void Die", verificamos se o player ja esta morto, se nao estiver ele vai entrar no etado _isDead e vai fazer a animacao de morte.
+Na Função Die, verificamos se o player esta morto, se não estiver ele vai entrar no estado _isDead, vai sair de outros estados que esteja e vai fazer a animação de morte.
 
 ```
  public void Die()
@@ -72,9 +72,8 @@ Na Func "public void Die", verificamos se o player ja esta morto, se nao estiver
         }
 ```
 
-Esta funcao e chamada no Game1 quando: 
+Esta função é chamada no Game1 da seguinte forma.
 
--O player esta vivo e colide com a hurtbox da parede.
 
 ```
 
