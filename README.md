@@ -20,9 +20,17 @@ Para sobreviver o personagem utiliza as suas capacidades de correr, saltar e des
 O ato de deslizar serve para desviar dos inimigos que voam, enquanto que o saltar serve para desviar dos inimigos que estao no chao.  
 Também é possivel atacar inimigos voadores saltando na cabeça deles e inimigos 
 
+# Classe auxiliares #
+Para a criação do nosso jogo são utilizadas uma série de classe de pequeno tamnanho e complexidade com o objetivo de agilizar o processo.   
+Sendo estas:
+- Sound.cs, responsavel pelos sons do jogo;
+- Score.cs, reponsavel por fazer o score do jogo visivel ao jogador;
+- Collisions.cs, que tem o metodo qua é usado para verificar as colisóes entre dois retangulos;
+- SpriteAnimation.cs, que contem os metodos relacionados a começar, parar, reiniciar e desenhar animações;
+- GameState.cs, que contem os estados possiveis do jogo, sendo estes Running e GameOver;
+- GameManager.cs, que guarda um backup das variaveis utilizadas pelo jogo para que quando seja iniciado o reset tudo volte ao valor inicial;
 
-
-# Classes #
+# Classes Principais #
 
 ## Player ##
 
