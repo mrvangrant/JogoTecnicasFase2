@@ -279,15 +279,7 @@ namespace JogoTecnicas
                 _currentAnimation = animation;
             }
         }
-        public Rectangle HorizontalTrackingBox
-        {
-            get
-            {
-                // Define o Y fixo e usa o X do player
-                int fixedY = 300; // Valor fixo para o eixo Y
-                return new Rectangle((int)Position.X, fixedY, BoundingBox.Width, BoundingBox.Height);
-            }
-        }
+        
 
 
     }
