@@ -6,7 +6,12 @@ Foi feito um Endless Runner em que o objetivo é sobreviver o máximo de tempo p
 
 Os assets utilizados foram retirados, com permissão, dos seguintes links:  
 
-Colocar aqui os links depois
+[base do personagem](https://benvictus.itch.io/test-dummy-platformer) 
+[sound effects](https://brackeysgames.itch.io/brackeys-platformer-bundle)
+[sound effects](https://epesami.itch.io/small-explosion-audio-pack)
+[musica de background](https://oandco.itch.io/loopable-video-game-music)
+
+os restantes assets forma criados para este jogo.
 
 # Gameplay #
 
