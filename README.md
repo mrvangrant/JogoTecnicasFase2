@@ -482,10 +482,10 @@ public Matrix GetViewMatrix()
         }
 ```
 ## Enemy ##
-Nesta classe é onde a informação relevante ao estado e variaveis dos inimigos é gerida
+Nesta classe é onde a informação relevante ao estado e variaveis dos inimigos é gerida.
 
 
-Temos aqui definidos 
+Temos aqui definidos dois conjuntos de valores nomeados, um deles referente ao estado do inimigo e outro a referir ao seu tipo
 ```
 public enum EnemyState
     {
@@ -500,5 +500,93 @@ public enum EnemyState
     }
 ```
 
-##EnemiesManage##
+As variaveis que são inicializadas para esta classe e o seu construtor
+```
+ public SpriteAnimation Animation;
+        public Vector2 Position;
+        public EnemyType Type => _type;
+        public Rectangle Bounds => new((int)Position.X + _hitboxOffsetX, (int)Position.Y + _hitboxOffsetY, _hitboxWidth, _hitboxHeight);
+        private EnemyType _type;
+        private float _speed;
+        private int _direction = 1; // 1: direita, -1: esquerda
+        private int _hitboxWidth;
+        private int _hitboxHeight;
+        private int _hitboxOffsetX;
+        private int _hitboxOffsetY;
+
+
+        //para conrtrolar morte
+        private EnemyState _state = EnemyState.Alive;
+        private SpriteAnimation _deathAnimation;
+        
+        private bool _deathSoundPlayed = false;
+
+        public bool IsDead => _state == EnemyState.Dead;
+        public EnemyState State => _state;
+
+        public Enemy(SpriteAnimation animation, Vector2 position, EnemyType type, float speed,
+    int hitboxOffsetX, int hitboxOffsetY, int hitboxWidth, int hitboxHeight,
+    SpriteAnimation deathAnim)
+        {
+            Animation = animation;
+            Position = position;
+            _type = type;
+            _speed = speed;
+            _hitboxOffsetX = hitboxOffsetX;
+            _hitboxOffsetY = hitboxOffsetY;
+            _hitboxWidth = hitboxWidth;
+            _hitboxHeight = hitboxHeight;
+            _deathAnimation = deathAnim;
+            
+        }
+```
+A função Die dos inimigos, que altera o seu estado, começa a sua animação e toca o som da sua morte
+```
+public void Die()
+        {
+            if (_state != EnemyState.Alive) return;
+
+            _state = EnemyState.Dying;
+            _deathAnimation.Reset();
+            _deathAnimation.Play();
+
+            if (!_deathSoundPlayed)
+            {
+                Sound.PlayExplosion();
+                _deathSoundPlayed = true;
+            }
+        }
+```
+Verifica o estado do inimigo, faz update ao frame das suas animações e altera a posição do inimigo runner
+```
+public void Update(GameTime gameTime, float worldSpeed)
+        {
+            if (_state == EnemyState.Alive)
+            {
+                Position.X -= worldSpeed;
+                if (_type == EnemyType.Runner)
+                    Position.X -= _speed;
+                Animation.Update(gameTime);
+            }
+            else if (_state == EnemyState.Dying)
+            {
+                _deathAnimation.Update(gameTime);
+                if (!_deathAnimation.IsPlaying)
+                    _state = EnemyState.Dead;
+            }
+        }
+```
+Desenha o inimigo, dependendo do estado dele muda a animação
+```
+public void Draw(SpriteBatch spriteBatch)
+        {
+            if (_state == EnemyState.Dead) return;
+
+            if (_state == EnemyState.Dying)
+                _deathAnimation.Draw(spriteBatch, Position);
+            else
+                Animation.Draw(spriteBatch, Position, _direction == 1 ? SpriteEffects.None : SpriteEffects.FlipHorizontally);
+        }
+```
+## EnemiesManage ##
 
