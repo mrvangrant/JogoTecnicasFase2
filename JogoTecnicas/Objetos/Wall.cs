@@ -47,6 +47,7 @@ namespace JogoTecnicas.Objetos
         {
             // Reseta a posição da parede para o início
             _position.X = 0;
+            _speed = 20;
         }
     }
 }

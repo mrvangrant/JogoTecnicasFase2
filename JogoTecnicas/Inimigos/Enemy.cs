@@ -56,5 +56,7 @@ namespace JogoTecnicas.Inimigos
         {
             Animation.Draw(spriteBatch, Position, _direction == 1 ? SpriteEffects.None : SpriteEffects.FlipHorizontally);
         }
+
+        
     }
 }

@@ -3,7 +3,9 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using System;
 using System.Collections.Generic;
-using JogoTecnicas.Inimigos;
+using static System.Formats.Asn1.AsnWriter;
+
+
 
 
 namespace JogoTecnicas.Inimigos
@@ -28,9 +30,10 @@ namespace JogoTecnicas.Inimigos
             
         }
 
-        public void Update(GameTime gameTime, float worldSpeed, bool isPlayerMovingRight, float playerX)
+        public void Update(GameTime gameTime, float worldSpeed, bool isPlayerMovingRight, float playerX, int currentscore)
         {
             float scrollSpeed = isPlayerMovingRight ? worldSpeed : 0f;
+            _spawnInterval = Math.Max(0.8f, 2f - currentscore * 0.01f);
 
             _spawnTimer += (float)gameTime.ElapsedGameTime.TotalSeconds;
             if (_spawnTimer >= _spawnInterval)
@@ -68,7 +71,7 @@ namespace JogoTecnicas.Inimigos
                    player.Center.X <= enemy.Right;
         }
 
-        //remove o inimigo runner quando o pplayer faz um slide nele
+        //remove o inimigo runner quando o player faz um slide nele
         public void RemoveHitEnemies(Rectangle playerBounds, bool isSliding, bool isJumping)
         {
             for (int i = _enemies.Count - 1; i >= 0; i--)
@@ -112,7 +115,7 @@ namespace JogoTecnicas.Inimigos
                 yield return enemy.Bounds;
         }
 
-        // Clona a animação para evitar bugs de estado compartilhado
+        // Clona a animação para evitar bugs
         private SpriteAnimation CloneAnimation(SpriteAnimation anim)
         {
             
@@ -125,6 +128,12 @@ namespace JogoTecnicas.Inimigos
                 anim.TotalFrames,
                 anim.TimePerFrame
             );
+        }
+        public void Reset()
+        {
+            _enemies.Clear();
+            _spawnTimer = 0f;
+            _spawnInterval = 2f;
         }
     }
 }

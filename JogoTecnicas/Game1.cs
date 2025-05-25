@@ -84,8 +84,7 @@ namespace JogoTecnicas
 
 
         public Score _score;
-        //private Wall _wall;
-        //private Texture2D _wallTexture;
+      
 
 
 
@@ -184,10 +183,10 @@ namespace JogoTecnicas
             }
 
             // Define a velocidade máxima e base da parede
-            const float maxWallSpeed = 200f; // Velocidade máxima da parede
+            const float maxWallSpeed = 500f; // Velocidade máxima da parede
             const float baseWallSpeed = 20f; // Velocidade inicial da parede
             const float playerBaseSpeed = 200f; // Velocidade base do jogador
-            const float distanceThreshold = 300f; // Distância X para aumentar a velocidade
+            const float distanceThreshold = 200f; // Distância X para aumentar a velocidade
 
             // Calcula a distância entre a parede e o jogador
             float distanceToPlayer = Player.Position.X-15 - Wall.BoundingBox.Right;
@@ -201,7 +200,7 @@ namespace JogoTecnicas
             else
             {
                 // Calcula a nova velocidade da parede com base no score
-                float newWallSpeed = MathHelper.Clamp(baseWallSpeed + _score.CurrentScore / 20f, baseWallSpeed, maxWallSpeed);
+                float newWallSpeed = MathHelper.Clamp(baseWallSpeed + _score.CurrentScore / 10f, baseWallSpeed, maxWallSpeed);
 
                 // Garante que a velocidade da parede seja sempre menor que a do jogador
                 if (newWallSpeed >= playerBaseSpeed * 0.8f)
@@ -234,7 +233,7 @@ namespace JogoTecnicas
             _player.Update(gameTime, _keyboardInput, _buildings.FloorRectangle);
 
             // Atualiza os inimigos
-            _enemies.Update(gameTime, 5f, Player.isPlayerMovingRight, Player.Position.X);
+            _enemies.Update(gameTime, 5f, Player.isPlayerMovingRight, Player.Position.X,_score.CurrentScore);
             _enemies.RemoveHitEnemies(_player.BoundingBox, _player.IsSliding, _player.IsJumping);
 
             // Atualiza a câmera com a posição do jogador
