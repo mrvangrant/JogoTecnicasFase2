@@ -11,12 +11,12 @@ Os assets utilizados foram retirados, com permissão, dos seguintes links:
 [sound effects](https://epesami.itch.io/small-explosion-audio-pack)  
 [musica de background](https://oandco.itch.io/loopable-video-game-music)  
 
-os restantes assets forma criados para este jogo.
+Os restantes assets forma criados para este jogo, por nôs.
 
 # Gameplay #
 
-O nosso jogo baseia-se num sidescroller em que o personagem tem de fugir de uma parede de espinhos que nunca para de andar, enquanto se desvia de inimigos que aprecem com uma frequencia que vai aumentando.
-Para sobreviver o personagem utilizade as habilidades de correr, saltar e deslizar.
+O nosso jogo baseia-se num sidescroller em que o personagem tem de fugir de uma parede de espinhos que o persegue, enquanto se desvia de inimigos que aparecem com cada vez mais frequencia.
+Para sobreviver o personagem utiliza as suas capacidades de correr, saltar e deslizar.
 O ato de deslizar serve para desviar dos inimigos que voam, enquanto que o saltar serve para desviar dos inimigos que estao no chao.  
 Também é possivel atacar inimigos voadores saltando na cabeça deles e inimigos 
 
