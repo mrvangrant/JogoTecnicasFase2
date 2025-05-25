@@ -10,6 +10,7 @@ namespace JogoTecnicas
         private SpriteAnimation _jumpAnimation;
         private SpriteAnimation _slideAnimation;
         private SpriteAnimation _idleAnimation;
+        private SpriteAnimation _deathAnimation;
         private SpriteAnimation _currentAnimation;
 
         private Vector2 _position;
@@ -17,6 +18,7 @@ namespace JogoTecnicas
         private bool _isJumping = false;
         private bool _isSliding = false;
         private bool _isIdle = true;
+        private bool _isDead = false;
         private float _verticalVelocity = 0f;
         private float _horizontalVelocity = 0f;
         private bool _isFacingRight = true;
@@ -32,20 +34,37 @@ namespace JogoTecnicas
         public bool isPlayerMovingRight => _isPlayerMovingRight;
         public bool IsSliding => _isSliding;
         public bool IsJumping => _isJumping;
+        public bool IsDead => _isDead;
 
-        public Player(SpriteAnimation runAnimation, SpriteAnimation jumpAnimation, SpriteAnimation slideAnimation, SpriteAnimation idleAnimation, Vector2 startPosition)
+        public Player(SpriteAnimation runAnimation, SpriteAnimation jumpAnimation, SpriteAnimation slideAnimation, SpriteAnimation idleAnimation, SpriteAnimation deathAnimation, Vector2 startPosition)
         {
             _runAnimation = runAnimation;
             _jumpAnimation = jumpAnimation;
             _slideAnimation = slideAnimation;
             _idleAnimation = idleAnimation;
             _currentAnimation = _idleAnimation;
+            _deathAnimation = deathAnimation;
             _position = startPosition;
 
             _runCollisionBox = new Rectangle(0, 0, _runAnimation.FrameWidth, _runAnimation.FrameHeight);
             _jumpCollisionBox = new Rectangle(0, 0, _jumpAnimation.FrameWidth, _jumpAnimation.FrameHeight);
             _slideCollisionBox = new Rectangle(0, 0, _slideAnimation.FrameWidth, _slideAnimation.FrameHeight);
             _idleCollisionBox = new Rectangle(0, 0, _idleAnimation.FrameWidth, _idleAnimation.FrameHeight);
+            
+        }
+
+        public void Die()
+        {
+            if (!_isDead)
+            {
+                _isDead = true;
+                _isJumping = false;
+                _isSliding = false;
+                _isRunning = false;
+                _isIdle = false;
+
+                SetCurrentAnimation(_deathAnimation, false);
+            }
         }
 
         public void Update(GameTime gameTime, KeyboardInput input, Rectangle floorRect)
@@ -55,11 +74,25 @@ namespace JogoTecnicas
             const float slideForce = 3f;
             const float slideRes = 0.10f;
 
+            if (_isDead)
+            {
+                // Atualiza a animação de morte
+                _currentAnimation.Update(gameTime);
+
+                // Corrige posição Y para não cair
+                _position.Y = floorRect.Top - _runAnimation.FrameHeight;
+                _verticalVelocity = 0f;
+
+                return;
+            }
+
+            // Física: gravidade e posição vertical (só se estiver vivo)
             _verticalVelocity += gravity;
             _position.Y += _verticalVelocity;
 
             Rectangle playerRect = this.BoundingBox;
             bool isOnGround = playerRect.Intersects(FixedYRectangle) && _verticalVelocity >= 0;
+
 
 
             //logica de slide
@@ -222,6 +255,7 @@ namespace JogoTecnicas
                 Rectangle collisionBox = _currentAnimation == _runAnimation ? _runCollisionBox :
                                          _currentAnimation == _jumpAnimation ? _jumpCollisionBox :
                                          _currentAnimation == _slideAnimation ? _slideCollisionBox :
+                                         _currentAnimation == _deathAnimation ? _runCollisionBox :
                                          _idleCollisionBox;
 
                 return new Rectangle((int)_position.X + collisionBox.X, (int)_position.Y + collisionBox.Y, collisionBox.Width, collisionBox.Height);

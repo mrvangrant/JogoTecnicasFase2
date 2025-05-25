@@ -12,7 +12,7 @@ namespace JogoTecnicas.Gestão
             // Reinicializa o jogador
             var runAnimation = new SpriteAnimation(
                 game.SpriteSheetTextureRun,
-                129,
+                193,
                 game.FrameWidth,
                 game.FrameHeight,
                 game.TotalFrames,
@@ -21,7 +21,7 @@ namespace JogoTecnicas.Gestão
 
             var jumpAnimation = new SpriteAnimation(
                 game.SpriteSheetTextureRun,
-                65,
+                129,
                 game.FrameWidth,
                 game.FrameHeight,
                 game.TotalFrames,
@@ -30,7 +30,7 @@ namespace JogoTecnicas.Gestão
 
             var slideAnimation = new SpriteAnimation(
                 game.SpriteSheetTextureRun,
-                0,
+                257,
                 game.FrameWidth,
                 game.FrameHeight,
                 game.TotalFrames + 1,
@@ -39,10 +39,19 @@ namespace JogoTecnicas.Gestão
 
             var idleAnimation = new SpriteAnimation(
                 game.SpriteSheetTextureRun,
-                193,
+                65,
                 game.FrameWidth,
                 game.FrameHeight,
                 4,
+                game.TimePerFrame
+            );
+
+            var deathAnimation = new SpriteAnimation(
+                game.SpriteSheetTextureRun,
+                0,
+                game.FrameWidth,
+                game.FrameHeight,
+                game.TotalFrames+7,
                 game.TimePerFrame
             );
 
@@ -51,6 +60,7 @@ namespace JogoTecnicas.Gestão
                 jumpAnimation,
                 slideAnimation,
                 idleAnimation,
+                deathAnimation,
                 new Vector2(180, game.FloorY - game.FrameHeight)
             );
 

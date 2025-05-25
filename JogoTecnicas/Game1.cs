@@ -18,8 +18,11 @@ namespace JogoTecnicas
     public class Game1 : Game
     {
 
+        //morte
+        private bool _isDying = false;
+        private double _deathAnimationTimer = 0;
+        private double _deathAnimationDuration = 1.0; // tempo da animação
 
-        
 
         // Gerenciador de estado do jogo
         private GameManager _gameManager = new GameManager();
@@ -35,7 +38,7 @@ namespace JogoTecnicas
         private bool _isGameOver = false;
 
         //sprites
-        private const string ASSET_NAME_SPRITESHEET = "texture";
+        private const string ASSET_NAME_SPRITESHEET = "Ninja1";
         private const string ASSET_NAME_BACKGROUND = "shaolin_background_a";
         private const string ASSET_NAME_FLOOR = "shaolin_background_floor";
         
@@ -114,7 +117,7 @@ namespace JogoTecnicas
         protected override void LoadContent()
         {
             _spriteBatch = new SpriteBatch(GraphicsDevice);
-            Wall = new Wall(GraphicsDevice, ScreenHeight, 20f); // Velocidade de 50 pixels por segundo
+            Wall = new Wall(GraphicsDevice, ScreenHeight, 20f); 
 
 
             _spriteSheetTextureRun = Content.Load<Texture2D>(ASSET_NAME_SPRITESHEET);
@@ -124,10 +127,11 @@ namespace JogoTecnicas
             Sound.PlayBackgroundMusic();
 
             // Crie as animações de correr e saltar
-            var runAnimation = new SpriteAnimation(_spriteSheetTextureRun, 129, _frameWidth, _frameHeight, _totalFrames, _timePerFrame);
-            var jumpAnimation = new SpriteAnimation(_spriteSheetTextureRun, 65, _frameWidth, _frameHeight, _totalFrames, _timePerFrame);
-            var slideAnimation = new SpriteAnimation(_spriteSheetTextureRun, 0, _frameWidth, _frameHeight, _totalFrames + 1, _timePerFrame);
-            var idleAnimation = new SpriteAnimation(_spriteSheetTextureRun, 193, _frameWidth, _frameHeight, 4, _timePerFrame);
+            var runAnimation = new SpriteAnimation(_spriteSheetTextureRun, 193, _frameWidth, _frameHeight, _totalFrames, _timePerFrame);
+            var jumpAnimation = new SpriteAnimation(_spriteSheetTextureRun, 129, _frameWidth, _frameHeight, _totalFrames, _timePerFrame);
+            var slideAnimation = new SpriteAnimation(_spriteSheetTextureRun, 257, _frameWidth, _frameHeight, _totalFrames + 1, _timePerFrame);
+            var idleAnimation = new SpriteAnimation(_spriteSheetTextureRun, 65, _frameWidth, _frameHeight, 4, _timePerFrame);
+            var deathAnimation = new SpriteAnimation(_spriteSheetTextureRun, 0, _frameWidth, _frameHeight, _totalFrames+7, _timePerFrame);
 
 
             //carrega textura inimigos
@@ -139,7 +143,7 @@ namespace JogoTecnicas
             var caveira = new SpriteAnimation(_inimigochao, 0, 64, 64, 2, 0.1f);
 
             // Inicializa o Player
-            _player = new Player(runAnimation, jumpAnimation, slideAnimation, idleAnimation, new Vector2(180, floorY - _frameHeight));
+            _player = new Player(runAnimation, jumpAnimation, slideAnimation, idleAnimation,deathAnimation, new Vector2(180, floorY - _frameHeight));
 
             //inicializa os inimigos
             _enemies = new EnemiesManage(voador, caveira);
@@ -173,6 +177,24 @@ namespace JogoTecnicas
 
         protected override void Update(GameTime gameTime)
         {
+
+            if (_isDying)
+            {
+                _deathAnimationTimer += gameTime.ElapsedGameTime.TotalSeconds;
+
+                _player.Update(gameTime, _keyboardInput, _buildings.FloorRectangle); 
+
+                if (_deathAnimationTimer >= _deathAnimationDuration)
+                {
+                    _isGameOver = true;
+                    _isDying = false;
+                }
+
+                return; // Sai do update para não atualizar mais nada
+            }
+
+
+
             if (_isGameOver)
             {
                 if (Keyboard.GetState().IsKeyDown(Keys.R))
@@ -215,9 +237,12 @@ namespace JogoTecnicas
             Wall.Update(gameTime);
 
             // Verifica colisão entre o jogador e a parede
-            if (Wall.BoundingBox.Intersects(Player.BoundingBox))
+            if (!_isDying && Wall.BoundingBox.Intersects(Player.BoundingBox))
             {
-                IsGameOver = true;
+                _player.Die();
+                Sound.PlayDeath();
+                _isDying = true;
+                _deathAnimationTimer = 0;
             }
 
             _score.Update(gameTime, _isGameOver);
@@ -239,18 +264,16 @@ namespace JogoTecnicas
             // Atualiza a câmera com a posição do jogador
             _camera.Update(_player.Position);
 
-            if (_enemies.CheckCollision(_player.BoundingBox))
+            if (!_isDying && _enemies.CheckCollision(_player.BoundingBox))
             {
+                _player.Die();
                 Sound.PlayDeath();
-                _isGameOver = true;
+                _isDying = true;
+                _deathAnimationTimer = 0;
             }
 
             base.Update(gameTime);
         }
-
-
-
-
 
 
 
