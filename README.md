@@ -26,12 +26,12 @@ O ato de deslizar serve para desviar dos enimigos que voam, enquanto que o salta
 
 # GameLoop #
 
-##Game1##
+## Game1 ##
 
 
 ----------------------------------------------------------------------
 
-##Player##
+## Player ##
 
 No inicio da classe, initializam-se as variaveis todas para as animacoes e os estados dos personagens, tal como as variaveis para as hurtboxes.
 
