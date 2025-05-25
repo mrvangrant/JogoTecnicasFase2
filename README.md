@@ -21,9 +21,6 @@ O ato de deslizar serve para desviar dos inimigos que voam, enquanto que o salta
 Também é possivel atacar inimigos voadores saltando na cabeça deles e inimigos 
 
 
-## Sprites ##
-
-
 
 # GameLoop #
 
