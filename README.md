@@ -15,9 +15,10 @@ os restantes assets forma criados para este jogo.
 
 # Gameplay #
 
-O nosso jogo baseia-se num sidescroller em que o personagem tem de fugir de uma parede de espinhos que nunca para de andar, enquanto se desvia de enemigos que aprecem com uma frequencia que vai aumentando.
+O nosso jogo baseia-se num sidescroller em que o personagem tem de fugir de uma parede de espinhos que nunca para de andar, enquanto se desvia de inimigos que aprecem com uma frequencia que vai aumentando.
 Para sobreviver o personagem utilizade as habilidades de correr, saltar e deslizar.
-O ato de deslizar serve para desviar dos enimigos que voam, enquanto que o saltar serve para desviar dos enimigos que estao no chao.
+O ato de deslizar serve para desviar dos inimigos que voam, enquanto que o saltar serve para desviar dos inimigos que estao no chao.  
+Também é possivel atacar inimigos voadores saltando na cabeça deles e inimigos 
 
 
 ## Sprites ##
