@@ -22,12 +22,7 @@ Também é possivel atacar inimigos voadores saltando na cabeça deles e inimigo
 
 
 
-# GameLoop #
-
-## Game1 ##
-
-
-----------------------------------------------------------------------
+# Classes #
 
 ## Player ##
 
@@ -74,20 +69,21 @@ Na Função Die, verificamos se o player esta morto, se não estiver ele vai ent
 
 
 
-No Void Update inicializam-se variaveis de fisica do movimento do player
+No Update é onde são iniciados as variaveis de fisica e onde é verificado o estado do player para este reagir de acordo.
 
+Inicializção das variaveis de fisica
 ```
-            const float gravity = 0.6f;
+
+const float gravity = 0.6f;
             const float jumpForce = -12.5f;
             const float slideForce = 3f;
             const float slideRes = 0.10f;
 ```
 
-Verifica se o jogador está morto e atualiza a animação de morte e prende o jogador
-
+Verificar se o jogador morreu, altera a animação, perde a velocidade e prende o personagem para que não caia do mapa
 ```
-
-if (_isDead)
+// Verifica se o jogador está morto e atualiza a animação de morte e prende o jogador
+            if (_isDead)
             {
                 if (_currentAnimation.IsPlaying)
                 {
@@ -99,13 +95,25 @@ if (_isDead)
 
                 return;
             }
+```
+
+Gravidade constantemente a afetar a velocidade vertical
+```
+// Física: gravidade e posição vertical (só se estiver vivo)
+            _verticalVelocity += gravity;
+            _position.Y += _verticalVelocity;
 
 ```
 
-Implementa a Logica da acao de slide
-
+Verifica se o player esta a tocar no "chão", que é uma caixa que segue o player no eixo do X e mantém o seu Y
+```
+Rectangle playerRect = this.BoundingBox;
+            bool isOnGround = playerRect.Intersects(FixedYRectangle) && _verticalVelocity >= 0;
 ```
 
+Verifica se o player esta a fazer um slide, se sim, aumenta a velociade horizontal e oferece resistencia para ele parar de forma natural
+```
+//logica de slide
             if (_isSliding)
             {
                 // Aplicar movimento
@@ -134,11 +142,159 @@ Implementa a Logica da acao de slide
             {
                 _horizontalVelocity = 0f;
             }
-
 ```
 
+Verifica se o player esta no chão, se sim, se estão a receber novos inputs altera o estado e a animação
+```
+if (isOnGround)
+            {
+                _position.Y = floorRect.Top - _runAnimation.FrameHeight;
+                _verticalVelocity = 0f;
 
-----------------------------------------------------------------------
+                if (_isJumping && !_jumpAnimation.IsPlaying)
+                {
+                    _isJumping = false;
+                    SetCurrentAnimation(_runAnimation, true);
+                }
+
+                if (!_isRunning && !_isJumping && !_isSliding)
+                {
+                    _isPlayerMovingRight = false;
+                    _isIdle = true;
+                    SetCurrentAnimation(_idleAnimation, true);
+                }
+            }
+
+            if (input.IsUpPressed() && !_isJumping && !_isSliding && isOnGround)
+            {
+                _isPlayerMovingRight = false;
+                _isJumping = true;
+                _isIdle = false;
+                _verticalVelocity = jumpForce;
+                Sound.PlayJump();
+
+                SetCurrentAnimation(_jumpAnimation, false);
+            }
+
+            if (input.IsDownPressed() && !_isSliding && !_isJumping && isOnGround)
+            {
+                _isPlayerMovingRight = false;
+                _isSliding = true;
+                _isIdle = false;
+                if (_isFacingRight)
+                {
+                    _horizontalVelocity = slideForce;
+                }
+                else
+                {
+                    _horizontalVelocity = -slideForce;
+                }
+
+                SetCurrentAnimation(_slideAnimation, false);
+            }
+
+            if (_isSliding && !_slideAnimation.IsPlaying)
+            {
+                _isSliding = false;
+                SetCurrentAnimation(_runAnimation, true);
+            }
+
+            if (input.IsRightPressed())
+            {
+                _isPlayerMovingRight = true;
+                _isFacingRight = true;
+                _position.X += 0.5f;
+
+                if (!_isJumping && !_isSliding)
+                {
+                    _isRunning = true;
+                    _isIdle = false;
+                    SetCurrentAnimation(_runAnimation, true);
+                }
+            }
+            else if (input.IsLeftPressed())
+            {
+                _isPlayerMovingRight = false;
+                _isFacingRight = false;
+                _position.X -= 2f;
+
+                if (!_isJumping && !_isSliding)
+                {
+                    _isRunning = true;
+                    _isIdle = false;
+                    SetCurrentAnimation(_runAnimation, true);
+                }
+            }
+            else if (!_isJumping && !_isSliding)
+            {
+                _isRunning = false;
+                _isIdle = true;
+                SetCurrentAnimation(_idleAnimation, true);
+            }
+
+            _currentAnimation.Update(gameTime);
+        }
+```
+Desenha o player com a animação necessaria atualmente, e vira o sprite se necessario
+```
+public void Draw(SpriteBatch spriteBatch)
+        {
+            // Desenha a animação do player
+            SpriteEffects spriteEffect = _isFacingRight ? SpriteEffects.None : SpriteEffects.FlipHorizontally;
+            _currentAnimation.Draw(spriteBatch, _position, spriteEffect);
+
+            //// Desenha o retângulo com Y fixo
+            //Texture2D rectangleTexture = new Texture2D(spriteBatch.GraphicsDevice, 1, 1);
+            //rectangleTexture.SetData(new[] { Color.White });
+            //spriteBatch.Draw(rectangleTexture, FixedYRectangle, Color.Red * 0.5f);
+        }
+```
+Retangulo debaixo do player falado anteriormente
+```
+public Rectangle FixedYRectangle
+        {
+            get
+            {
+                int rectWidth = 70; // Largura fixa do retângulo
+                int rectHeight = 40; // Altura fixa do retângulo
+                int rectX = (int)_position.X; // Mesmo X do player
+                int rectY = 410; // Y constante
+
+                return new Rectangle(rectX, rectY, rectWidth, rectHeight);
+            }
+        }
+```
+Fazer a posição do player publica
+```
+public Vector2 Position
+        {
+            get => _position;
+            set => _position = value;
+        }
+```
+
+Muda a Collisison box do player dependendo da animação atual e faz essas boxes publicas
+```
+public Rectangle BoundingBox
+        {
+            get
+            {
+                Rectangle collisionBox = _currentAnimation == _runAnimation ? _runCollisionBox :
+                                         _currentAnimation == _jumpAnimation ? _jumpCollisionBox :
+                                         _currentAnimation == _slideAnimation ? _slideCollisionBox :
+                                         _currentAnimation == _deathAnimation ? _runCollisionBox :
+                                         _idleCollisionBox;
+
+                return new Rectangle((int)_position.X + collisionBox.X, (int)_position.Y + collisionBox.Y, collisionBox.Width, collisionBox.Height);
+            }
+        }
+
+        public void SetRunCollisionBox(Rectangle collisionBox) => _runCollisionBox = collisionBox;
+        public void SetJumpCollisionBox(Rectangle collisionBox) => _jumpCollisionBox = collisionBox;
+        public void SetSlideCollisionBox(Rectangle collisionBox) => _slideCollisionBox = collisionBox;
+        public void SetIdleCollisionBox(Rectangle collisionBox) => _idleCollisionBox = collisionBox;
+```
+
 ##KeyboardInput##
 
 ##Buildings##
