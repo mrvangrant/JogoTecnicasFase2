@@ -127,6 +127,41 @@ if (_isDead)
 
 ```
 
+Implementa a Logica da acao de slide
+
+```
+
+            if (_isSliding)
+            {
+                // Aplicar movimento
+                _position.X += _horizontalVelocity;
+
+                // Desacelerar
+                if (_horizontalVelocity > 0)
+                {
+                    _horizontalVelocity -= slideRes;
+                    if (_horizontalVelocity < 0) _horizontalVelocity = 0;
+                }
+                else if (_horizontalVelocity < 0)
+                {
+                    _horizontalVelocity += slideRes;
+                    if (_horizontalVelocity > 0) _horizontalVelocity = 0;
+                }
+
+                // Parar slide quando velocidade chega a zero
+                if (_horizontalVelocity == 0f)
+                {
+                    _isSliding = false;
+                    SetCurrentAnimation(_runAnimation, true);
+                }
+            }
+            else
+            {
+                _horizontalVelocity = 0f;
+            }
+
+```
+
 
 ----------------------------------------------------------------------
 ##KeyboardInput##
