@@ -589,4 +589,173 @@ public void Draw(SpriteBatch spriteBatch)
         }
 ```
 ## EnemiesManage ##
+Esta é a classe que gera a utilização dos inimigos no jogo como, afrequencia com os inimigos apareçem, remover os inimigos que já não são necessarios e as suas colisões
 
+Inicializa as variaveis necessarias para esta classe
+```
+ private List<Enemy> _enemies = new();
+        private Random _random = new();
+        private float _spawnTimer;
+        private float _spawnInterval = 2f;
+        private SpriteAnimation _staticAnim;
+        private SpriteAnimation _patrolAnim;
+        private SpriteAnimation _deathAnimStatic;
+        private SpriteAnimation _deathAnimRunner;
+```
+Verifica que inimigos estão mortos ou a morrer e returna apenas os vivos
+```
+//metodo para saber que inimigos estão vivos
+        public IEnumerable<Enemy> GetAliveEnemies()
+        {
+            foreach (var enemy in _enemies)
+                if (!enemy.IsDead && enemy.State != EnemyState.Dying)
+                    yield return enemy;
+        }
+```
+O construtor da classe
+```
+public EnemiesManage(SpriteAnimation staticAnim, SpriteAnimation patrolAnim,
+                             SpriteAnimation deathAnimStatic, SpriteAnimation deathAnimRunner)
+        {
+            _staticAnim = staticAnim;
+            _patrolAnim = patrolAnim;
+            _deathAnimStatic = deathAnimStatic;
+            _deathAnimRunner = deathAnimRunner;
+            
+        }
+```
+No metodo Update.
+Verica-se que o jogador esta a mexer para a direita para os inimigos também se mexerem.  
+Altera o intervalo entre o spawn de inimigos com o amumento do score.  
+Liga o temporizador para o spawn de inimigos ao tempo de jogo.
+```
+float scrollSpeed = isPlayerMovingRight ? worldSpeed : 0f;
+            _spawnInterval = Math.Max(0.8f, 2f - currentscore * 0.01f);
+
+            _spawnTimer += (float)gameTime.ElapsedGameTime.TotalSeconds;
+```
+Verifica se o temporizador do spawn esta maior que o intervalo, se sim reinica o temporizador, escolhe um inimigo aleatorio, clona a animação para não haver conflito e adiciona o inimigo.  
+```
+if (_spawnTimer >= _spawnInterval)
+            {
+                _spawnTimer = 0;
+                float y = 350;
+                float x = playerX + 1000; //spawn de inimigos 1000 a direita do player
+
+                if (_random.Next(2) == 0)
+                {
+                    var anim = CloneAnimation(_staticAnim);
+                    var deathAnim = CloneAnimation(_deathAnimStatic);
+                    deathAnim.Loop = false; // Animação de morte não deve ser repetida
+                    _enemies.Add(new Enemy(anim, new Vector2(x, y), EnemyType.Static, 0f, 20, 15, 26, 22, deathAnim));
+                }
+                else
+                {
+                    var anim = CloneAnimation(_patrolAnim);
+                    var deathAnim = CloneAnimation(_deathAnimRunner);
+                    deathAnim.Loop = false; // Animação de morte não deve ser repetida
+                    _enemies.Add(new Enemy(anim, new Vector2(x, y), EnemyType.Runner, 4f, 10, 20, 44, 40, deathAnim));
+                }
+            }
+```
+Verifica a lista de inimigos se um deles esta morto é removido
+```
+            for (int i = _enemies.Count - 1; i >= 0; i--)
+            {
+                _enemies[i].Update(gameTime, scrollSpeed);
+
+                // Remove inimigos completamente mortos
+                if (_enemies[i].IsDead)
+                    _enemies.RemoveAt(i);
+            }
+        }
+```
+Verifica se o jogador esta a saltar em cima de um inimigo
+```
+//função que verifica se o jogador esta a saltar em cima do inimigo
+        public bool IsJumpingOnTop(Rectangle player, Rectangle enemy)
+        {
+            // Verifica se a parte inferior do jogador está acima da parte superior do inimigo e descendo
+            return player.Bottom >= enemy.Top - 5 &&
+                   player.Bottom <= enemy.Top + 10 &&
+                   player.Center.X >= enemy.Left &&
+                   player.Center.X <= enemy.Right;
+        }
+```
+Verifica se o inimigo foi atingido enquanto que o player faz um slide
+```
+//remove o inimigo runner quando o player faz um slide nele
+        public void RemoveHitEnemies(Rectangle playerBounds, bool isSliding, bool isJumping)
+        {
+            for (int i = _enemies.Count - 1; i >= 0; i--)
+            {
+                var enemy = _enemies[i];
+
+                if (enemy.Bounds.Intersects(playerBounds))
+                {
+                    if (enemy.Type == EnemyType.Runner && isSliding)
+                    {
+                        enemy.Die();
+                    }
+                    else if (enemy.Type == EnemyType.Static && isJumping && IsJumpingOnTop(playerBounds, enemy.Bounds))
+                    {
+                        enemy.Die();
+                    }
+                }
+            }
+
+```
+Desenhar os inimigos
+```
+public void Draw(SpriteBatch spriteBatch)
+        {
+            foreach (var enemy in _enemies)
+                enemy.Draw(spriteBatch);
+        }
+```
+Verificar as colisões entre inimigos e player
+```
+public bool CheckCollision(Rectangle playerBounds)
+        {
+            foreach (var enemy in _enemies)
+            {
+                if (enemy.Bounds.Intersects(playerBounds))
+                    return true;
+            }
+            return false;
+        }
+```
+Percorre os inimigos e recolhe as boundingBoxes deles
+```
+public IEnumerable<Rectangle> GetBoundingBoxes()
+        {
+            foreach (var enemy in _enemies)
+                yield return enemy.Bounds;
+        }
+```
+Metodo para clonar as animações para que cada inimigo possa alterar a sua animação independente dos outros
+```
+// Clona a animação para evitar bugs
+        private SpriteAnimation CloneAnimation(SpriteAnimation anim)
+        {
+            
+            
+            return new SpriteAnimation(
+                anim.Texture,
+                anim.Index,
+                anim.FrameWidth,
+                anim.FrameHeight,
+                anim.TotalFrames,
+                anim.TimePerFrame
+            );
+        }
+```
+O reset para retornar o jogo ao normal quando necessario
+```
+public void Reset()
+        {
+            _enemies.Clear();
+            _spawnTimer = 0f;
+            _spawnInterval = 2f;
+        }
+```
