@@ -1,5 +1,6 @@
 ﻿using JogoTecnicas.Graficos;
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Audio;
 using Microsoft.Xna.Framework.Graphics;
 using System;
 using System.Collections.Generic;
@@ -16,17 +17,31 @@ namespace JogoTecnicas.Inimigos
         private Random _random = new();
         private float _spawnTimer;
         private float _spawnInterval = 2f;
-        
+
 
         private SpriteAnimation _staticAnim;
         private SpriteAnimation _patrolAnim;
+        private SpriteAnimation _deathAnimStatic;
+        private SpriteAnimation _deathAnimRunner;
 
-        
 
-        public EnemiesManage(SpriteAnimation staticAnim, SpriteAnimation patrolAnim)
+        //metodo para saber que inimigos estão vivos
+        public IEnumerable<Enemy> GetAliveEnemies()
+        {
+            foreach (var enemy in _enemies)
+                if (!enemy.IsDead && enemy.State != EnemyState.Dying)
+                    yield return enemy;
+        }
+
+
+
+        public EnemiesManage(SpriteAnimation staticAnim, SpriteAnimation patrolAnim,
+                             SpriteAnimation deathAnimStatic, SpriteAnimation deathAnimRunner)
         {
             _staticAnim = staticAnim;
             _patrolAnim = patrolAnim;
+            _deathAnimStatic = deathAnimStatic;
+            _deathAnimRunner = deathAnimRunner;
             
         }
 
@@ -45,24 +60,30 @@ namespace JogoTecnicas.Inimigos
                 if (_random.Next(2) == 0)
                 {
                     var anim = CloneAnimation(_staticAnim);
-                    _enemies.Add(new Enemy(anim, new Vector2(x, y), EnemyType.Static, 0f, 20, 15, 26, 22));
+                    var deathAnim = CloneAnimation(_deathAnimStatic);
+                    deathAnim.Loop = false; // Animação de morte não deve ser repetida
+                    _enemies.Add(new Enemy(anim, new Vector2(x, y), EnemyType.Static, 0f, 20, 15, 26, 22, deathAnim));
                 }
                 else
                 {
                     var anim = CloneAnimation(_patrolAnim);
-                    _enemies.Add(new Enemy(anim, new Vector2(x, y), EnemyType.Runner, 4f, 10, 20, 44, 40));
+                    var deathAnim = CloneAnimation(_deathAnimRunner);
+                    deathAnim.Loop = false; // Animação de morte não deve ser repetida
+                    _enemies.Add(new Enemy(anim, new Vector2(x, y), EnemyType.Runner, 4f, 10, 20, 44, 40, deathAnim));
                 }
             }
 
             for (int i = _enemies.Count - 1; i >= 0; i--)
             {
                 _enemies[i].Update(gameTime, scrollSpeed);
-                if (_enemies[i].Position.X < -_enemies[i].Animation.FrameWidth)
+
+                // Remove inimigos completamente mortos
+                if (_enemies[i].IsDead)
                     _enemies.RemoveAt(i);
             }
         }
         //função que verifica se o jogador esta a saltar em cima do inimigo
-        private bool IsJumpingOnTop(Rectangle player, Rectangle enemy)
+        public bool IsJumpingOnTop(Rectangle player, Rectangle enemy)
         {
             // Verifica se a parte inferior do jogador está acima da parte superior do inimigo e descendo
             return player.Bottom >= enemy.Top - 5 &&
@@ -82,11 +103,11 @@ namespace JogoTecnicas.Inimigos
                 {
                     if (enemy.Type == EnemyType.Runner && isSliding)
                     {
-                        _enemies.RemoveAt(i);
+                        enemy.Die();
                     }
                     else if (enemy.Type == EnemyType.Static && isJumping && IsJumpingOnTop(playerBounds, enemy.Bounds))
                     {
-                        _enemies.RemoveAt(i);
+                        enemy.Die();
                     }
                 }
             }

@@ -72,9 +72,13 @@ namespace JogoTecnicas.Gestão
             game.Player.SetIdleCollisionBox(new Rectangle(20, 15, 20, 50)); // Colisão para idle
 
             // Reinicializa os inimigos
-            var voador = new SpriteAnimation(game.Voador, 0, 64, 64, 7, 0.2f);
-            var caveira = new SpriteAnimation(game.Chao, 0, 64, 64, 2, 0.2f);
-            game.Enemies = new EnemiesManage(voador, caveira);
+            var voador = new SpriteAnimation(game.Voador, 65, 64, 64, 6, 0.1f);
+            var caveira = new SpriteAnimation(game.Chao, 65, 64, 64, 8, 0.2f);
+            var caveiramorre = new SpriteAnimation(game.Chao, 0, 64, 64, 6, 0.2f);
+            var voadormorre = new SpriteAnimation(game.Voador, 0, 64, 64, 6, 0.1f);
+            caveiramorre.Loop = false;
+            voadormorre.Loop = false;
+            game.Enemies = new EnemiesManage(voador, caveira,voadormorre, caveiramorre);
             game.Enemies.Reset();
 
             // Reinicializa o placar

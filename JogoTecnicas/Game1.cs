@@ -135,18 +135,21 @@ namespace JogoTecnicas
 
 
             //carrega textura inimigos
-            _inimigovoa = Content.Load<Texture2D>("enemy_26x22");
-            _inimigochao = Content.Load<Texture2D>("enemy_44x40");
+            _inimigovoa = Content.Load<Texture2D>("Enemy2");
+            _inimigochao = Content.Load<Texture2D>("Site2Ground");
 
             // Cria as animações dos inimigos
-            var voador = new SpriteAnimation(_inimigovoa, 0, 64, 64, 7, 0.1f);
-            var caveira = new SpriteAnimation(_inimigochao, 0, 64, 64, 2, 0.1f);
-
+            var voador = new SpriteAnimation(_inimigovoa, 65, 64, 64, 6, 0.1f);
+            var caveira = new SpriteAnimation(_inimigochao, 65, 64, 64, 8, 0.2f);
+            var caveiramorre = new SpriteAnimation(_inimigochao, 0, 64, 64, 8, 0.2f);
+            caveiramorre.Loop = false; 
+            var voadormorre = new SpriteAnimation(_inimigovoa, 0, 64, 64, 6, 0.1f);
+            voadormorre.Loop = false; 
             // Inicializa o Player
             _player = new Player(runAnimation, jumpAnimation, slideAnimation, idleAnimation,deathAnimation, new Vector2(180, floorY - _frameHeight));
 
             //inicializa os inimigos
-            _enemies = new EnemiesManage(voador, caveira);
+            _enemies = new EnemiesManage(voador, caveira,voadormorre,caveiramorre);
 
 
 
@@ -259,18 +262,44 @@ namespace JogoTecnicas
 
             // Atualiza os inimigos
             _enemies.Update(gameTime, 5f, Player.isPlayerMovingRight, Player.Position.X,_score.CurrentScore);
-            _enemies.RemoveHitEnemies(_player.BoundingBox, _player.IsSliding, _player.IsJumping);
+            
 
             // Atualiza a câmera com a posição do jogador
             _camera.Update(_player.Position);
 
-            if (!_isDying && _enemies.CheckCollision(_player.BoundingBox))
+
+            bool playerHit = false;
+
+            foreach (var enemy in _enemies.GetAliveEnemies())
+            {
+                if (_player.BoundingBox.Intersects(enemy.Bounds))
+                {
+                    if (enemy.Type == EnemyType.Runner && _player.IsSliding)
+                    {
+                        enemy.Die();
+                        continue;
+                    }
+                    else if (enemy.Type == EnemyType.Static && _player.IsJumping && _enemies.IsJumpingOnTop(_player.BoundingBox, enemy.Bounds))
+                    {
+                        enemy.Die();
+                        continue;
+                    }
+                    else
+                    {
+                        playerHit = true;
+                        break;
+                    }
+                }
+            }
+
+            if (!_isDying && playerHit)
             {
                 _player.Die();
                 Sound.PlayDeath();
                 _isDying = true;
                 _deathAnimationTimer = 0;
             }
+
 
             base.Update(gameTime);
         }

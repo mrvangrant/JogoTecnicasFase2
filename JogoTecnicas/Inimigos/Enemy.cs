@@ -2,9 +2,19 @@
 using JogoTecnicas.Graficos;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Audio;
 
 namespace JogoTecnicas.Inimigos
 {
+
+
+
+    public enum EnemyState
+    {
+        Alive,
+        Dying,
+        Dead
+    }
     public enum EnemyType
     {
         Static,
@@ -25,7 +35,19 @@ namespace JogoTecnicas.Inimigos
         private int _hitboxOffsetX;
         private int _hitboxOffsetY;
 
-        public Enemy(SpriteAnimation animation, Vector2 position, EnemyType type, float speed,int hitboxOffsetX, int hitboxOffsetY, int hitboxWidth, int hitboxHeight)
+
+        //para conrtrolar morte
+        private EnemyState _state = EnemyState.Alive;
+        private SpriteAnimation _deathAnimation;
+        
+        private bool _deathSoundPlayed = false;
+
+        public bool IsDead => _state == EnemyState.Dead;
+        public EnemyState State => _state;
+
+        public Enemy(SpriteAnimation animation, Vector2 position, EnemyType type, float speed,
+    int hitboxOffsetX, int hitboxOffsetY, int hitboxWidth, int hitboxHeight,
+    SpriteAnimation deathAnim)
         {
             Animation = animation;
             Position = position;
@@ -35,28 +57,52 @@ namespace JogoTecnicas.Inimigos
             _hitboxOffsetY = hitboxOffsetY;
             _hitboxWidth = hitboxWidth;
             _hitboxHeight = hitboxHeight;
+            _deathAnimation = deathAnim;
+            
+        }
+
+        public void Die()
+        {
+            if (_state != EnemyState.Alive) return;
+
+            _state = EnemyState.Dying;
+            _deathAnimation.Reset();
+            _deathAnimation.Play();
+
+            if (!_deathSoundPlayed)
+            {
+                Sound.PlayExplosion();
+                _deathSoundPlayed = true;
+            }
         }
 
         public void Update(GameTime gameTime, float worldSpeed)
         {
-            // Move o inimigo com o mundo
-            Position.X -= worldSpeed;
-
-            // Movimento de patrulha apenas para o tipo Patrol
-            if (_type == EnemyType.Runner)
+            if (_state == EnemyState.Alive)
             {
-                Position.X -=  _speed;
-              
+                Position.X -= worldSpeed;
+                if (_type == EnemyType.Runner)
+                    Position.X -= _speed;
+                Animation.Update(gameTime);
             }
-
-            Animation.Update(gameTime);
+            else if (_state == EnemyState.Dying)
+            {
+                _deathAnimation.Update(gameTime);
+                if (!_deathAnimation.IsPlaying)
+                    _state = EnemyState.Dead;
+            }
         }
 
         public void Draw(SpriteBatch spriteBatch)
         {
-            Animation.Draw(spriteBatch, Position, _direction == 1 ? SpriteEffects.None : SpriteEffects.FlipHorizontally);
+            if (_state == EnemyState.Dead) return;
+
+            if (_state == EnemyState.Dying)
+                _deathAnimation.Draw(spriteBatch, Position);
+            else
+                Animation.Draw(spriteBatch, Position, _direction == 1 ? SpriteEffects.None : SpriteEffects.FlipHorizontally);
         }
 
-        
+
     }
 }

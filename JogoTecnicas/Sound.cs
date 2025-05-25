@@ -10,6 +10,7 @@ namespace JogoTecnicas
         private static SoundEffect saltarSom;
         private static SoundEffect morrerSom;
         private static Song musicaSom;
+        private static SoundEffect explosion;
 
         public static void LoadContent(ContentManager content)
         {
@@ -17,6 +18,7 @@ namespace JogoTecnicas
             musicaSom = content.Load<Song>("Delightful Stroll");
             saltarSom = content.Load<SoundEffect>("jump");
             morrerSom = content.Load<SoundEffect>("hurt");
+            explosion = content.Load<SoundEffect>("SE-Explosion3-B");
         }
 
         public static void PlayJump()
@@ -27,6 +29,11 @@ namespace JogoTecnicas
         public static void PlayDeath()
         {
             morrerSom.Play();
+        }
+
+        public static void PlayExplosion()
+        {
+            explosion.Play();
         }
 
         public static void PlayBackgroundMusic()
