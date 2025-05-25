@@ -33,7 +33,7 @@ namespace JogoTecnicas.Gestão
                 257,
                 game.FrameWidth,
                 game.FrameHeight,
-                game.TotalFrames + 1,
+                game.TotalFrames,
                 game.TimePerFrame
             );
 
@@ -51,7 +51,7 @@ namespace JogoTecnicas.Gestão
                 0,
                 game.FrameWidth,
                 game.FrameHeight,
-                game.TotalFrames+7,
+                game.TotalFrames,
                 game.TimePerFrame
             );
 

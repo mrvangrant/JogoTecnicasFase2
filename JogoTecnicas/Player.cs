@@ -66,7 +66,6 @@ namespace JogoTecnicas
                 SetCurrentAnimation(_deathAnimation, false);
             }
         }
-
         public void Update(GameTime gameTime, KeyboardInput input, Rectangle floorRect)
         {
             const float gravity = 0.6f;
@@ -74,12 +73,15 @@ namespace JogoTecnicas
             const float slideForce = 3f;
             const float slideRes = 0.10f;
 
+
+            // Verifica se o jogador está morto e atualiza a animação de morte e prende o jogador
             if (_isDead)
             {
-                // Atualiza a animação de morte
-                _currentAnimation.Update(gameTime);
+                if (_currentAnimation.IsPlaying)
+                {
+                    _currentAnimation.Update(gameTime);
+                }
 
-                // Corrige posição Y para não cair
                 _position.Y = floorRect.Top - _runAnimation.FrameHeight;
                 _verticalVelocity = 0f;
 
