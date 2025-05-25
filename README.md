@@ -294,7 +294,20 @@ public Rectangle BoundingBox
         public void SetSlideCollisionBox(Rectangle collisionBox) => _slideCollisionBox = collisionBox;
         public void SetIdleCollisionBox(Rectangle collisionBox) => _idleCollisionBox = collisionBox;
 ```
+Muda a animação atual para aquela que lhe for fornecida
+```
+private void SetCurrentAnimation(SpriteAnimation animation, bool loop)
+        {
+            if (_currentAnimation != animation)
+            {
+                animation.Loop = loop;
+                animation.Reset();
+                animation.Play();
+                _currentAnimation = animation;
+            }
+        }
 
+```
 ##KeyboardInput##
 
 ##Buildings##
