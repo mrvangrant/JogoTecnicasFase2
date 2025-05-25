@@ -99,6 +99,34 @@ if (!_isDying && _enemies.CheckCollision(_player.BoundingBox))
 
 ```
 
+No Void Update inicializam-se variaveis de fisica do movimento do player
+
+```
+            const float gravity = 0.6f;
+            const float jumpForce = -12.5f;
+            const float slideForce = 3f;
+            const float slideRes = 0.10f;
+```
+
+Verifica se o jogador está morto e atualiza a animação de morte e prende o jogador
+
+```
+
+if (_isDead)
+            {
+                if (_currentAnimation.IsPlaying)
+                {
+                    _currentAnimation.Update(gameTime);
+                }
+
+                _position.Y = floorRect.Top - _runAnimation.FrameHeight;
+                _verticalVelocity = 0f;
+
+                return;
+            }
+
+```
+
 
 ----------------------------------------------------------------------
 ##KeyboardInput##
