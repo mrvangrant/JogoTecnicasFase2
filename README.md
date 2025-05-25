@@ -72,34 +72,7 @@ Na Função Die, verificamos se o player esta morto, se não estiver ele vai ent
         }
 ```
 
-Esta função é chamada no Game1 da seguinte forma.
 
-
-```
-
-if (!_isDying && Wall.BoundingBox.Intersects(Player.BoundingBox))
-            {
-                _player.Die();
-                Sound.PlayDeath();
-                _isDying = true;
-                _deathAnimationTimer = 0;
-            }
-
-```
-
--O player esta vivo e colide com a hurtbox dos monstros.
-
-```
-
-if (!_isDying && _enemies.CheckCollision(_player.BoundingBox))
-            {
-                _player.Die();
-                Sound.PlayDeath();
-                _isDying = true;
-                _deathAnimationTimer = 0;
-            }
-
-```
 
 No Void Update inicializam-se variaveis de fisica do movimento do player
 
