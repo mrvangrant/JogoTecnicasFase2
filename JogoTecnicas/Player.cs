@@ -223,10 +223,10 @@ namespace JogoTecnicas
             SpriteEffects spriteEffect = _isFacingRight ? SpriteEffects.None : SpriteEffects.FlipHorizontally;
             _currentAnimation.Draw(spriteBatch, _position, spriteEffect);
 
-            // Desenha o retângulo com Y fixo
-            Texture2D rectangleTexture = new Texture2D(spriteBatch.GraphicsDevice, 1, 1);
-            rectangleTexture.SetData(new[] { Color.White });
-            spriteBatch.Draw(rectangleTexture, FixedYRectangle, Color.Red * 0.5f);
+            //// Desenha o retângulo com Y fixo
+            //Texture2D rectangleTexture = new Texture2D(spriteBatch.GraphicsDevice, 1, 1);
+            //rectangleTexture.SetData(new[] { Color.White });
+            //spriteBatch.Draw(rectangleTexture, FixedYRectangle, Color.Red * 0.5f);
         }
         public Rectangle FixedYRectangle
         {

@@ -15,7 +15,7 @@ namespace JogoTecnicas
         public Score(SpriteFont font)
         {
             _font = font;
-            _position = new Vector2(20, 20); // Posição fixa no canto superior esquerdo
+            _position = new Vector2(650, 20); // Posição fixa no canto superior direito
             _score = 0;
             _timer = 0f;
         }

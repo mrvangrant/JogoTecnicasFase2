@@ -48,9 +48,9 @@ namespace JogoTecnicas.Objetos
             // Carrega a textura da parede a partir do arquivo wall1long.png
             _texture = content.Load<Texture2D>("wall1long");
 
-            // Cria uma textura de 1x1 pixel para desenhar a hitbox
-            _hitboxTexture = new Texture2D(graphicsDevice, 1, 1);
-            _hitboxTexture.SetData(new[] { Color.Red }); // Define a cor da hitbox como vermelha
+            //// Cria uma textura de 1x1 pixel para desenhar a hitbox
+            //_hitboxTexture = new Texture2D(graphicsDevice, 1, 1);
+            //_hitboxTexture.SetData(new[] { Color.Red }); // Define a cor da hitbox como vermelha
         }
 
         public void Update(GameTime gameTime)
@@ -64,19 +64,19 @@ namespace JogoTecnicas.Objetos
             // Desenha a textura da parede com sua resolução original
             spriteBatch.Draw(_texture, _position, Color.White);
 
-            // Desenha a hitbox (borda do retângulo)
-            DrawRectangle(spriteBatch, BoundingBox, Color.Red);
+            //// Desenha a hitbox (borda do retângulo)
+            //DrawRectangle(spriteBatch, BoundingBox, Color.Red);
         }
 
 
-        private void DrawRectangle(SpriteBatch spriteBatch, Rectangle rectangle, Color color)
-        {
-            // Desenha as bordas do retângulo
-            spriteBatch.Draw(_hitboxTexture, new Rectangle(rectangle.X, rectangle.Y, rectangle.Width, 1), color); // Topo
-            spriteBatch.Draw(_hitboxTexture, new Rectangle(rectangle.X, rectangle.Y, 1, rectangle.Height), color); // Esquerda
-            spriteBatch.Draw(_hitboxTexture, new Rectangle(rectangle.X + rectangle.Width - 1, rectangle.Y, 1, rectangle.Height), color); // Direita
-            spriteBatch.Draw(_hitboxTexture, new Rectangle(rectangle.X, rectangle.Y + rectangle.Height - 1, rectangle.Width, 1), color); // Base
-        }
+        //private void DrawRectangle(SpriteBatch spriteBatch, Rectangle rectangle, Color color)
+        //{
+        //    // Desenha as bordas do retângulo
+        //    spriteBatch.Draw(_hitboxTexture, new Rectangle(rectangle.X, rectangle.Y, rectangle.Width, 1), color); // Topo
+        //    spriteBatch.Draw(_hitboxTexture, new Rectangle(rectangle.X, rectangle.Y, 1, rectangle.Height), color); // Esquerda
+        //    spriteBatch.Draw(_hitboxTexture, new Rectangle(rectangle.X + rectangle.Width - 1, rectangle.Y, 1, rectangle.Height), color); // Direita
+        //    spriteBatch.Draw(_hitboxTexture, new Rectangle(rectangle.X, rectangle.Y + rectangle.Height - 1, rectangle.Width, 1), color); // Base
+        //}
 
         public void Reset()
         {

@@ -333,12 +333,12 @@ namespace JogoTecnicas
             _player.Draw(_spriteBatch);
             _enemies.Draw(_spriteBatch);
 
-            // Desenha os retângulos de colisão
-            DrawCollisionBox(_spriteBatch, _player.BoundingBox, Color.Red);
-            foreach (var enemies in _enemies.GetBoundingBoxes())
-            {
-                DrawCollisionBox(_spriteBatch, enemies, Color.Yellow);
-            }
+            //// Desenha os retângulos de colisão
+            //DrawCollisionBox(_spriteBatch, _player.BoundingBox, Color.Red);
+            //foreach (var enemies in _enemies.GetBoundingBoxes())
+            //{
+            //    DrawCollisionBox(_spriteBatch, enemies, Color.Yellow);
+            //}
 
             _spriteBatch.End();
 
@@ -378,18 +378,18 @@ namespace JogoTecnicas
 
 
         // Método auxiliar para desenhar retângulos de colisão
-        private void DrawCollisionBox(SpriteBatch spriteBatch, Rectangle rectangle, Color color)
-        {
-            // Cria uma textura de 1x1 pixel
-            Texture2D texture = new Texture2D(GraphicsDevice, 1, 1);
-            texture.SetData(new[] { color });
+        //private void DrawCollisionBox(SpriteBatch spriteBatch, Rectangle rectangle, Color color)
+        //{
+        //    // Cria uma textura de 1x1 pixel
+        //    Texture2D texture = new Texture2D(GraphicsDevice, 1, 1);
+        //    texture.SetData(new[] { color });
 
-            // Desenha as bordas do retângulo
-            spriteBatch.Draw(texture, new Rectangle(rectangle.X, rectangle.Y, rectangle.Width, 1), color); // Topo
-            spriteBatch.Draw(texture, new Rectangle(rectangle.X, rectangle.Y, 1, rectangle.Height), color); // Esquerda
-            spriteBatch.Draw(texture, new Rectangle(rectangle.X + rectangle.Width - 1, rectangle.Y, 1, rectangle.Height), color); // Direita
-            spriteBatch.Draw(texture, new Rectangle(rectangle.X, rectangle.Y + rectangle.Height - 1, rectangle.Width, 1), color); // Base
-        }
+        //    // Desenha as bordas do retângulo
+        //    spriteBatch.Draw(texture, new Rectangle(rectangle.X, rectangle.Y, rectangle.Width, 1), color); // Topo
+        //    spriteBatch.Draw(texture, new Rectangle(rectangle.X, rectangle.Y, 1, rectangle.Height), color); // Esquerda
+        //    spriteBatch.Draw(texture, new Rectangle(rectangle.X + rectangle.Width - 1, rectangle.Y, 1, rectangle.Height), color); // Direita
+        //    spriteBatch.Draw(texture, new Rectangle(rectangle.X, rectangle.Y + rectangle.Height - 1, rectangle.Width, 1), color); // Base
+        //}
         public void ResetCamera()
         {
             _camera = new Camera(ScreenWidth, ScreenHeight);
