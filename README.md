@@ -308,6 +308,179 @@ private void SetCurrentAnimation(SpriteAnimation animation, bool loop)
         }
 
 ```
+----------------------------------------------------------------------------------------------------------------------------
+## Buildings ##
+A classe Buildings é a classe responsável pelo Background e o chão.
+No construtor atribuiram-se as variáveis responsáveis pela textura do background, pela textura do chão, pela definição do tamanho da tela e a velocidade com que o background e o chão se movem.
+```
+public Buildings(Texture2D backgroundTexture, Texture2D floorTexture, int screenWidth, int screenHeight, float backgroundScrollSpeed = 20f, float floorScrollSpeed = 200f)
+        {
+            _backgroundTexture = backgroundTexture;
+            _floorTexture = floorTexture;
+            _screenWidth = screenWidth;
+            _screenHeight = screenHeight;
+            _backgroundScrollSpeed = backgroundScrollSpeed;
+            _floorScrollSpeed = floorScrollSpeed;
+
+            _floorOffset = 0f;
+            _floorY = _screenHeight - 60;
+
+            // Inicia 3 posições lado a lado
+            backgroundPositions = new Vector2[3];
+            for (int i = 0; i < backgroundPositions.Length; i++)
+            {
+                backgroundPositions[i] = new Vector2(i * _backgroundTexture.Width, 0);
+            }
+        }
+```
+Na função Update efetuamos uma verificação "if (!isPlayerMovingRight)" para que o background e o chão se possam mover.
+```
+ public void Update(GameTime gameTime, bool isPlayerMovingRight)
+        {
+            if (!isPlayerMovingRight)
+                return;
+
+            float delta = (float)gameTime.ElapsedGameTime.TotalSeconds;
+
+            // Atualiza posição do background (array de posições)
+            float backgroundMovement = _backgroundScrollSpeed * delta;
+            for (int i = 0; i < backgroundPositions.Length; i++)
+            {
+                backgroundPositions[i].X -= backgroundMovement;
+
+                // Reposiciona os blocos que saíram da tela à direita
+                if (backgroundPositions[i].X < -_backgroundTexture.Width)
+                {
+                    float maxX = backgroundPositions.Max(p => p.X);
+                    backgroundPositions[i].X = maxX + _backgroundTexture.Width;
+                }
+            }
+
+            // Atualiza offset do chão para scroll
+            _floorOffset += _floorScrollSpeed * delta;
+            if (_floorOffset >= _floorTexture.Width)
+                _floorOffset -= _floorTexture.Width;
+        }
+```
+Por fim temos as funções "DrawBackground" e "DrawFloor", responsáveis por desenharem o Background e o chão, respetivamente, na tela.
+```
+ public void DrawBackground(SpriteBatch spriteBatch)
+        {
+            foreach (var pos in backgroundPositions)
+            {
+                spriteBatch.Draw(_backgroundTexture, pos, Color.White);
+            }
+        }
+
+        public void DrawFloor(SpriteBatch spriteBatch)
+        {
+            // Desenha o chão 3 vezes para loop infinito
+            spriteBatch.Draw(_floorTexture, new Vector2(-_floorOffset, _floorY), Color.White);
+            spriteBatch.Draw(_floorTexture, new Vector2(_floorTexture.Width - _floorOffset, _floorY), Color.White);
+            spriteBatch.Draw(_floorTexture, new Vector2(2 * _floorTexture.Width - _floorOffset, _floorY), Color.White);
+        }
+```
+
+## Wall ##
+Esta classe é a classe responsável, por um dos objetos mais essenciais, para a dinâmica do jogo, a parede.
+Antes do construtor temos uma função responsável pela criação da collision_box da parede, que teve de ser ajustada.
+```
+ public Rectangle BoundingBox
+        {
+            get
+            {
+                int offsetX = 0; // Reduz a hitbox horizontalmente (margem esquerda e direita)
+                int offsetY = -20; // Reduz a hitbox verticalmente (margem superior e inferior)
+                int reducedWidth = _width - 385; // Largura reduzida
+                int reducedHeight = _height; // Altura reduzida
+
+                return new Rectangle(
+                    (int)_position.X + offsetX, // Aplica o deslocamento horizontal
+                    (int)_position.Y + offsetY, // Aplica o deslocamento vertical
+                    reducedWidth, // Define a largura reduzida
+                    reducedHeight // Define a altura reduzida
+                );
+            }
+        }
+```
+Temos o construtor onde são atribuídas as variáveis responsáveis pelo tamanho, a posição inicial e a textura da parede.
+```
+public Wall(GraphicsDevice graphicsDevice, ContentManager content, int screenHeight, float speed)
+        {
+            _width = 400; // Aumente a largura da parede
+            _height = screenHeight; // Altura da parede igual à altura da tela
+            _position = new Vector2(0, -38); // Sempre começa na posição X = 0
+            _speed = speed; // Velocidade de movimento da parede
+
+            // Carrega a textura da parede a partir do arquivo wall1long.png
+            _texture = content.Load<Texture2D>("wall1long");
+
+            //// Cria uma textura de 1x1 pixel para desenhar a hitbox
+            //_hitboxTexture = new Texture2D(graphicsDevice, 1, 1);
+            //_hitboxTexture.SetData(new[] { Color.Red }); // Define a cor da hitbox como vermelha
+        }
+```
+A função Update é a função responsável pelo movimento da parede em direção ao player.
+```
+public void Update(GameTime gameTime)
+        {
+            // Move a parede para a direita
+            _position.X += _speed * (float)gameTime.ElapsedGameTime.TotalSeconds;
+        }
+```
+Na função Draw é onde se desenha a parede, tendo como parâmetros a textura, a posição e a cor, que neste caso é Color.White, ou seje, sem cor.
+```
+public void Draw(SpriteBatch spriteBatch)
+        {
+            // Desenha a textura da parede com sua resolução original
+            spriteBatch.Draw(_texture, _position, Color.White);
+
+            //// Desenha a hitbox (borda do retângulo)
+            //DrawRectangle(spriteBatch, BoundingBox, Color.Red);
+        }
+```
+Por fim temos a função Reset, responsável por, em caso de reset, colocar a parede na posição inicial e retornar a velocidade inicial da parede.
+```
+ public void Reset()
+        {
+            // Reseta a posição da parede para o início
+            _position.X = 0;
+            _speed = 20;
+        }
+```
+---------------------------------------------------------------------------------------------------------
+## Camara ##
+Esta classe é responsável pelo funcionamento da câmera que segue o player quando este se desloca para a direita.
+Temos o construtor, responsável por definir a largura e a altura da tela e também a posição do player.
+```
+public Camera(int screenWidth, int screenHeight)
+        {
+            _screenWidth = screenWidth;
+            _screenHeight = screenHeight;
+            _position = Vector2.Zero;
+        }
+```
+Ainda temos a função Update responsável por verificar se a posição do player se altera para a direita para deslocar a câmera e também é responsável por impedir que a câmera se desloque para posições negativas.
+```
+public void Update(Vector2 playerPosition)
+        {
+            // A câmera só se move para a direita
+            if (playerPosition.X > _position.X + _screenWidth / 2)
+            {
+                _position.X = playerPosition.X - _screenWidth / 2;
+            }
+
+            // Impede que a câmera vá para posições negativas
+            if (_position.X < 0) _position.X = 0;
+        }
+```
+Por fim temos a função GetViewMatrix responsável por retornar uma translação que dá o efeito visual de movimento da câmera.
+```
+public Matrix GetViewMatrix()
+        {
+            return Matrix.CreateTranslation(new Vector3(-_position, 0));
+        }
+```
 ## Enemy ##
 Nesta classe é onde a informação relevante ao estado e variaveis dos inimigos é gerida
 
@@ -327,21 +500,5 @@ public enum EnemyState
     }
 ```
 
-##Buildings##
-
-##Collisions##
-
-##Wall##
-
-##Enemy##
-
 ##EnemiesManage##
-
-##SpriteAnimation##
-
-##GameState##
-
-##GameManager##
-
-##Camara##
 
