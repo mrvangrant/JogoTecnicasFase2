@@ -206,10 +206,10 @@ namespace JogoTecnicas
             }
 
             // Define a velocidade máxima e base da parede
-            const float maxWallSpeed = 500f; // Velocidade máxima da parede
+            const float maxWallSpeed = 300f; // Velocidade máxima da parede
             const float baseWallSpeed = 20f; // Velocidade inicial da parede
             const float playerBaseSpeed = 200f; // Velocidade base do jogador
-            const float distanceThreshold = 200f; // Distância X para aumentar a velocidade
+            const float distanceThreshold = 250f; // Distância X para aumentar a velocidade
 
             // Calcula a distância entre a parede e o jogador
             float distanceToPlayer = Player.Position.X-15 - Wall.BoundingBox.Right;
@@ -222,17 +222,18 @@ namespace JogoTecnicas
             }
             else
             {
-                // Calcula a nova velocidade da parede com base no score
-                float newWallSpeed = MathHelper.Clamp(baseWallSpeed + _score.CurrentScore / 100f, baseWallSpeed, maxWallSpeed);
+                // Calcula a nova velocidade da parede com base no score, reduzindo o impacto do score
+                float newWallSpeed = MathHelper.Clamp(baseWallSpeed + _score.CurrentScore / 500f, baseWallSpeed, maxWallSpeed);
 
-                // Permite que a velocidade da parede seja um pouco maior que a do jogador
-                if (newWallSpeed <= playerBaseSpeed * 0.7f) // Permite até 10% a mais que a velocidade do jogador
+                // Garante que a velocidade da parede seja controlada em relação ao jogador
+                if (newWallSpeed > playerBaseSpeed * 0.9f) // Permite até 90% da velocidade do jogador
                 {
-                    newWallSpeed = playerBaseSpeed * 0.7f; // Define a margem de segurança
+                    newWallSpeed = playerBaseSpeed * 0.9f; // Define a margem de segurança
                 }
 
                 Wall.Speed = newWallSpeed;
             }
+
 
 
             // Atualiza a parede
