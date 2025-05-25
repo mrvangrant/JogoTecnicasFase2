@@ -235,7 +235,7 @@ namespace JogoTecnicas
                 int rectWidth = 70; // Largura fixa do retângulo
                 int rectHeight = 40; // Altura fixa do retângulo
                 int rectX = (int)_position.X; // Mesmo X do player
-                int rectY = 410; // Y constante (ajuste conforme necessário)
+                int rectY = 410; // Y constante
 
                 return new Rectangle(rectX, rectY, rectWidth, rectHeight);
             }
