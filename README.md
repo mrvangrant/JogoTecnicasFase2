@@ -308,7 +308,24 @@ private void SetCurrentAnimation(SpriteAnimation animation, bool loop)
         }
 
 ```
-##KeyboardInput##
+## Enemy ##
+Nesta classe é onde a informação relevante ao estado e variaveis dos inimigos é gerida
+
+
+Temos aqui definidos 
+```
+public enum EnemyState
+    {
+        Alive,
+        Dying,
+        Dead
+    }
+    public enum EnemyType
+    {
+        Static,
+        Runner
+    }
+```
 
 ##Buildings##
 
