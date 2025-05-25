@@ -117,7 +117,8 @@ namespace JogoTecnicas
         protected override void LoadContent()
         {
             _spriteBatch = new SpriteBatch(GraphicsDevice);
-            Wall = new Wall(GraphicsDevice, ScreenHeight, 20f); 
+            Wall = new Wall(GraphicsDevice, Content, ScreenHeight, 20f);
+
 
 
             _spriteSheetTextureRun = Content.Load<Texture2D>(ASSET_NAME_SPRITESHEET);
@@ -222,19 +223,21 @@ namespace JogoTecnicas
             else
             {
                 // Calcula a nova velocidade da parede com base no score
-                float newWallSpeed = MathHelper.Clamp(baseWallSpeed + _score.CurrentScore / 10f, baseWallSpeed, maxWallSpeed);
+                float newWallSpeed = MathHelper.Clamp(baseWallSpeed + _score.CurrentScore / 100f, baseWallSpeed, maxWallSpeed);
 
-                // Garante que a velocidade da parede seja sempre menor que a do jogador
-                if (newWallSpeed >= playerBaseSpeed * 0.8f)
+                // Permite que a velocidade da parede seja um pouco maior que a do jogador
+                if (newWallSpeed <= playerBaseSpeed * 0.7f) // Permite até 10% a mais que a velocidade do jogador
                 {
-                    newWallSpeed = playerBaseSpeed * 0.7f; // Mantém uma margem de segurança
+                    newWallSpeed = playerBaseSpeed * 0.7f; // Define a margem de segurança
                 }
 
                 Wall.Speed = newWallSpeed;
             }
 
+
             // Atualiza a parede
             Wall.Update(gameTime);
+
 
             // Verifica colisão entre o jogador e a parede
             if (!_isDying && Wall.BoundingBox.Intersects(Player.BoundingBox))
