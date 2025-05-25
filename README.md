@@ -51,6 +51,53 @@ Na Func "public Player" atribui-se as variaveis das animacoes inicializadas no i
         }
 ```
 
+Na Func "public void Die", verificamos se o player ja esta morto, se nao estiver ele vai entrar no etado _isDead e vai fazer a animacao de morte.
+
+```
+ public void Die()
+        {
+            if (!_isDead)
+            {
+                _isDead = true;
+                _isJumping = false;
+                _isSliding = false;
+                _isRunning = false;
+                _isIdle = false;
+
+                SetCurrentAnimation(_deathAnimation, false);
+            }
+        }
+```
+
+Esta funcao e chamada no Game1 quando: 
+
+-O player esta vivo e colide com a hurtbox da parede.
+
+```
+
+if (!_isDying && Wall.BoundingBox.Intersects(Player.BoundingBox))
+            {
+                _player.Die();
+                Sound.PlayDeath();
+                _isDying = true;
+                _deathAnimationTimer = 0;
+            }
+
+```
+
+-O player esta vivo e colide com a hurtbox dos monstros.
+
+```
+
+if (!_isDying && _enemies.CheckCollision(_player.BoundingBox))
+            {
+                _player.Die();
+                Sound.PlayDeath();
+                _isDying = true;
+                _deathAnimationTimer = 0;
+            }
+
+```
 
 
 ----------------------------------------------------------------------
