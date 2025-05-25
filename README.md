@@ -31,7 +31,308 @@ Sendo estas:
 - GameManager.cs, que guarda um backup das variaveis utilizadas pelo jogo para que quando seja iniciado o reset tudo volte ao valor inicial;
 
 # Classes Principais #
+## Game1 ##
+A classe Game1 é o núcleo do jogo, sendo responsável por gerenciar as 4 partes mais importantes do jogo, a Inicialização (Initialize), o carregamento do conteúdo (LoadContent), a atualização lógica a cada frame (Update) e por fim o desenho na tela (Draw).
+No início da classe são declaradas as variáveis dos principais elementos do jogo.
+```
+        //morte
+        private bool _isDying = false;
+        private double _deathAnimationTimer = 0;
+        private double _deathAnimationDuration = 1.0; // tempo da animação
 
+
+        // Gerenciador de estado do jogo
+        private GameManager _gameManager = new GameManager();
+
+        //outras classes
+        private KeyboardInput _keyboardInput = new KeyboardInput();
+        private Buildings _buildings;
+        private Player _player;
+        private EnemiesManage _enemies;
+        private Texture2D _inimigovoa;
+        private Texture2D _inimigochao;
+        private SpriteFont _font;
+        private bool _isGameOver = false;
+
+        //sprites
+        private const string ASSET_NAME_SPRITESHEET = "AnimacoesV2";
+        private const string ASSET_NAME_BACKGROUND = "shaolin_background_a";
+        private const string ASSET_NAME_FLOOR = "shaolin_background_floor";
+        
+
+        //tela
+        private int _screenWidth = 740;
+        private int _screenHeight = 470;
+
+        //altura do chão
+        private int floorY;
+
+        private GraphicsDeviceManager _graphics;
+        private SpriteBatch _spriteBatch;
+
+        // Textura do player e valores para os frames
+        private Texture2D _spriteSheetTextureRun;
+        private int _frameWidth = 64;
+        private int _frameHeight = 64;
+        private int _totalFrames = 7;
+        private float _timePerFrame = 0.1f;
+
+        // Textura de fundo e chão
+        private Texture2D _backgroundTexture;
+        private Texture2D _floorTexture;
+
+        // Propriedades públicas para o GameManager
+        public Player Player { get => _player; set => _player = value; }
+        public EnemiesManage Enemies { get => _enemies; set => _enemies = value; }
+        public Buildings Buildings { get => _buildings; set => _buildings = value; }
+        public Texture2D Voador => _inimigovoa;
+
+        public Texture2D Chao => _inimigochao;
+        public Texture2D SpriteSheetTextureRun => _spriteSheetTextureRun;
+        public Texture2D BackgroundTexture => _backgroundTexture;
+        public Texture2D FloorTexture => _floorTexture;
+        public int ScreenWidth => _screenWidth;
+        public int ScreenHeight => _screenHeight;
+        public int FloorY => floorY;
+        public int FrameWidth => _frameWidth;
+        public int FrameHeight => _frameHeight;
+        public int TotalFrames => _totalFrames;
+        public float TimePerFrame => _timePerFrame;
+        public bool IsGameOver { get => _isGameOver; set => _isGameOver = value; }
+        public Wall Wall { get; set; }
+        public Camera _camera { get; private set; }
+
+
+        public Score _score;
+```
+No construtor da classe Game1 é configurado o GraphicsDeviceManager e o diretório do conteúdo.
+```
+public Game1()
+{
+    _graphics = new GraphicsDeviceManager(this);
+    Content.RootDirectory = "Content";
+    IsMouseVisible = true;
+}
+```
+No método Initialize são ajustadas as configurações gráficas e é inicializada a câmera.
+```
+protected override void Initialize()
+{
+    _graphics.IsFullScreen = false;
+    _graphics.PreferredBackBufferWidth = _screenWidth;
+    _graphics.PreferredBackBufferHeight = _screenHeight;
+    _graphics.ApplyChanges();
+
+    floorY = _screenHeight - 60;
+    _camera = new Camera(_screenWidth, _screenHeight);
+
+    base.Initialize();
+}
+```
+No método LoadContent são carregadas todas as texturas, fontes, sons, objetos do jogador, inimigos e por fim o cenário.
+```
+ protected override void LoadContent()
+        {
+            _spriteBatch = new SpriteBatch(GraphicsDevice);
+            Wall = new Wall(GraphicsDevice, Content, ScreenHeight, 20f);
+
+
+
+            _spriteSheetTextureRun = Content.Load<Texture2D>(ASSET_NAME_SPRITESHEET);
+
+            //Sons e musica
+            Sound.LoadContent(Content);
+            Sound.PlayBackgroundMusic();
+
+            // Crie as animações de correr e saltar
+            var runAnimation = new SpriteAnimation(_spriteSheetTextureRun, 193, _frameWidth, _frameHeight, _totalFrames, _timePerFrame);
+            var jumpAnimation = new SpriteAnimation(_spriteSheetTextureRun, 129, _frameWidth, _frameHeight, _totalFrames, _timePerFrame);
+            var slideAnimation = new SpriteAnimation(_spriteSheetTextureRun, 257, _frameWidth, _frameHeight, _totalFrames, _timePerFrame);
+            var idleAnimation = new SpriteAnimation(_spriteSheetTextureRun, 65, _frameWidth, _frameHeight, 4, _timePerFrame);
+            var deathAnimation = new SpriteAnimation(_spriteSheetTextureRun, 0, _frameWidth, _frameHeight, _totalFrames, _timePerFrame);
+
+
+            //carrega textura inimigos
+            _inimigovoa = Content.Load<Texture2D>("Enemy2");
+            _inimigochao = Content.Load<Texture2D>("Site2Ground");
+
+            // Cria as animações dos inimigos
+            var voador = new SpriteAnimation(_inimigovoa, 65, 64, 64, 6, 0.1f);
+            var caveira = new SpriteAnimation(_inimigochao, 65, 64, 64, 8, 0.2f);
+            var caveiramorre = new SpriteAnimation(_inimigochao, 0, 64, 64, 8, 0.2f);
+            caveiramorre.Loop = false; 
+            var voadormorre = new SpriteAnimation(_inimigovoa, 0, 64, 64, 6, 0.1f);
+            voadormorre.Loop = false; 
+            // Inicializa o Player
+            _player = new Player(runAnimation, jumpAnimation, slideAnimation, idleAnimation,deathAnimation, new Vector2(180, floorY - _frameHeight));
+
+            //inicializa os inimigos
+            _enemies = new EnemiesManage(voador, caveira,voadormorre,caveiramorre);
+
+
+
+
+            //caixas de colisão
+            _player.SetRunCollisionBox(new Rectangle(15, 20, 40, 45)); // Colisão para corrida
+            _player.SetJumpCollisionBox(new Rectangle(15, 5, 35, 50)); // Colisão para salto
+            _player.SetSlideCollisionBox(new Rectangle(10, 50, 45, 15)); // Colisão para deslizar
+            _player.SetIdleCollisionBox(new Rectangle(20, 15, 20, 50)); // Colisão para Idle que está certa
+
+            
+
+            
+            
+            //carregar fonte
+            _font = Content.Load<SpriteFont>("DefaultFont");
+            _score = new Score(_font);
+
+
+
+            // Carrega as texturas de fundo e chão
+            _backgroundTexture = Content.Load<Texture2D>(ASSET_NAME_BACKGROUND);
+            _floorTexture = Content.Load<Texture2D>(ASSET_NAME_FLOOR);
+
+            // Inicializa a classe Buildings
+            _buildings = new Buildings(_backgroundTexture, _floorTexture, _screenWidth, _screenHeight);
+        }
+```
+O método Update é chamado frame a frame para atualizar e verificar o estado do jogo, sendo dividido em diversas verificações e atualizações.
+   Gerenciar o estado de morte e animação de morte:
+   ```
+if (_isDying)
+{
+    _deathAnimationTimer += gameTime.ElapsedGameTime.TotalSeconds;
+    _player.Update(gameTime, _keyboardInput, _buildings.FloorRectangle); 
+    if (_deathAnimationTimer >= _deathAnimationDuration)
+    {
+        _isGameOver = true;
+        _isDying = false;
+    }
+    return;
+}
+```
+   Reiniciar quando acontece Game Over:
+   ```
+if (_isGameOver)
+{
+    if (Keyboard.GetState().IsKeyDown(Keys.R))
+    {
+        _gameManager.RestartGame(this);
+    }
+    return;
+}
+```
+   Controlar a velocidade da parede e atualização da posição:
+   ```
+float distanceToPlayer = Player.Position.X-15 - Wall.BoundingBox.Right;
+
+if (distanceToPlayer > distanceThreshold)
+{
+    Wall.Speed = MathHelper.Clamp(Wall.Speed + 15f * (float)gameTime.ElapsedGameTime.TotalSeconds, baseWallSpeed, maxWallSpeed);
+}
+else
+{
+    float newWallSpeed = MathHelper.Clamp(baseWallSpeed + _score.CurrentScore / 500f, baseWallSpeed, maxWallSpeed);
+    if (newWallSpeed > playerBaseSpeed * 0.9f)
+        newWallSpeed = playerBaseSpeed * 0.9f; 
+    Wall.Speed = newWallSpeed;
+}
+```
+   Atualizar entidades e verificar colisões:
+   ```
+Wall.Update(gameTime);
+if (!_isDying && Wall.BoundingBox.Intersects(Player.BoundingBox))
+{
+    _player.Die();
+    Sound.PlayDeath();
+    _isDying = true;
+    _deathAnimationTimer = 0;
+}
+
+_score.Update(gameTime, _isGameOver);
+_keyboardInput.Update();
+
+// Atualiza cenário, player, inimigos
+_buildings.Update(gameTime, Player.isPlayerMovingRight);
+_player.Update(gameTime, _keyboardInput, _buildings.FloorRectangle);
+_enemies.Update(gameTime, 5f, Player.isPlayerMovingRight, Player.Position.X,_score.CurrentScore);
+_camera.Update(_player.Position);
+
+// Colisão player x inimigos
+foreach (var enemy in _enemies.GetAliveEnemies())
+{
+    if (_player.BoundingBox.Intersects(enemy.Bounds))
+    {
+        if (enemy.Type == EnemyType.Runner && _player.IsSliding)
+        {
+            enemy.Die();
+            continue;
+        }
+        else if (enemy.Type == EnemyType.Static && _player.IsJumping && _enemies.IsJumpingOnTop(_player.BoundingBox, enemy.Bounds))
+        {
+            enemy.Die();
+            continue;
+        }
+        else
+        {
+            playerHit = true;
+            break;
+        }
+    }
+}
+if (!_isDying && playerHit)
+{
+    _player.Die();
+    Sound.PlayDeath();
+    _isDying = true;
+    _deathAnimationTimer = 0;
+}
+```
+Por fim temos o método Draw, responsável por desenhar tudo na tela seguindo uma ordem.
+```
+GraphicsDevice.Clear(Color.CornflowerBlue);
+_spriteBatch.Begin();
+_buildings.DrawBackground(_spriteBatch);
+_buildings.DrawFloor(_spriteBatch);
+_spriteBatch.End();
+
+// Matriz de visualização da câmera
+Matrix viewMatrix = _camera.GetViewMatrix();
+
+_spriteBatch.Begin(transformMatrix: viewMatrix);
+Wall.Draw(_spriteBatch);
+_player.Draw(_spriteBatch);
+_enemies.Draw(_spriteBatch);
+_spriteBatch.End();
+
+// Desenha o Score (HUD)
+_spriteBatch.Begin();
+_score.Draw(_spriteBatch, 1.25f);
+
+// Mensagem de Game Over centralizada
+if (_isGameOver)
+{
+    string gameOverText = "Game Over";
+    string restartText = "Pressione R para recomecar";
+    Vector2 gameOverSize = _font.MeasureString(gameOverText);
+    Vector2 restartSize = _font.MeasureString(restartText);
+    Vector2 gameOverPosition = new Vector2((_screenWidth - gameOverSize.X) / 2, (_screenHeight - gameOverSize.Y) / 2 - 30);
+    Vector2 restartPosition = new Vector2((_screenWidth - restartSize.X) / 2, (_screenHeight - restartSize.Y) / 2 + 20);
+    _spriteBatch.DrawString(_font, gameOverText, gameOverPosition, Color.Red, 0, Vector2.Zero, 1.5f, SpriteEffects.None, 0);
+    _spriteBatch.DrawString(_font, restartText, restartPosition, Color.White);
+}
+_spriteBatch.End();
+}
+```
+Temos ainda o método ResetCamera que é responsável por fazer com que a camera volte aos seus parâmetros inicias quando é chamado.
+```
+public void ResetCamera()
+{
+    _camera = new Camera(ScreenWidth, ScreenHeight);
+    _camera.Update(Player.Position);
+}
+```
+------------------------------------------------------------------------------------------------
 ## Player ##
 
 No inicio da classe, initializam-se as variaveis todas para as animacoes e os estados dos personagens, tal como as variaveis para as CollisionBoxes.
