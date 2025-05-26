@@ -1,8 +1,0 @@
-O boneco spawna a 1/3 do mapa, e consoante as batidas nos obstáculos ele recua na frame, ficando mais próximop da parede.
-
-Se o jogador chegar a "X" pontos ele avança 1 u.m. para a frente caso ele esteja numa posição diferente da posição diferente da inicial.
-
-Adicionar uma tabela high-score que não seja apagada quando o jogo fecha 
-
-Implementar obstaculos que não causem dano ao jogador e implementar obstaculos capazes de matar o jogador "Hit-Kill" para aumentar a dificuldade
-
