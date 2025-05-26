@@ -1,4 +1,4 @@
-# TrbalhoPraticoTecnicas2
+# TrabalhoPraticoTecnicas2
 
 Foi feito um Endless Runner em que o objetivo é sobreviver o máximo de tempo possível enquanto que se é perseguido por uma parede de espinhos e se desvia de obstáculos saltando e deslizando.
 
